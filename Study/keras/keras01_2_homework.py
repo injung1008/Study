@@ -11,7 +11,7 @@ model.add(Dense(1, input_dim=1))
 
 model.compile(loss='mse', optimizer='adam')
 
-model.fit(x,y, epochs=16000, batch_size=1)
+model.fit(x,y, epochs=1600, batch_size=1)
 
 loss = model.evaluate(x,y)
 print('loss : ', loss)
