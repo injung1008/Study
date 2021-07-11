@@ -7,11 +7,11 @@ y = np.array([1,2,4,3,5])
 x_pred = [6] #6에 대한 예측값 
 
 model = Sequential()
-model.add(Dense(1, input_dim=2))
+model.add(Dense(1, input_dim=1))
 
 model.compile(loss='mse', optimizer='adam')
 
-model.fit(x,y, epochs=16000, batch_size=1)
+model.fit(x,y, epochs=20000, batch_size=3)
 
 loss = model.evaluate(x,y)
 print('loss : ', loss)

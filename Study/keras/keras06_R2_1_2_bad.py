@@ -34,19 +34,20 @@ print(x_train)
 
 #2.모델 구성  
 model = Sequential()
-model.add(Dense(5, input_dim=1)) 
-model.add(Dense(1000, activation=tf.nn.relu, kernel_regularizer=keras.regularizers.l2(0.001)))
-model.add(Dense(1))
-model.add(Dense(1))
-model.add(Dense(1))
-model.add(Dense(1))
+model.add(Dense(1, input_dim=1)) 
+model.add(Dense(12))
+model.add(Dense(10))
+model.add(Dense(100))
+model.add(Dense(102))
+model.add(Dense(10))
 model.add(Dense(1))
 
 #3. 컴파일 훈련 
-model.compile(loss='mse', optimizer='adam')
+
+model.compile(loss='kld', optimizer='adam')
 
 
-model.fit(x_train, y_train, epochs=200, batch_size=1)
+model.fit(x_train, y_train, epochs=200, batch_size=3)
 # -> 이 과정에서 가중치가 생성이 된다 
 
 #4. 평가, 예측 
