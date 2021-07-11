@@ -6,13 +6,6 @@
 #6. 히든레이어의 노드는 10개 이상 1000개 이하.
 #7. train 70% 
 
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense
-import numpy as np
-import matplotlib.pyplot as plt
-from sklearn.model_selection import train_test_split
-
-
 #1. 데이터 
 
 #훈련 50%/ 검증 30% 테스트 20% 
@@ -23,7 +16,6 @@ from tensorflow.keras.layers import Dense
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
-
 
 
 
@@ -44,7 +36,11 @@ print(x_train)
 model = Sequential()
 model.add(Dense(5, input_dim=1)) 
 model.add(Dense(1000, activation=tf.nn.relu, kernel_regularizer=keras.regularizers.l2(0.001)))
-
+model.add(Dense(1))
+model.add(Dense(1))
+model.add(Dense(1))
+model.add(Dense(1))
+model.add(Dense(1))
 
 #3. 컴파일 훈련 
 model.compile(loss='mse', optimizer='adam')
