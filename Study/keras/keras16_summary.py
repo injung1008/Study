@@ -19,4 +19,3 @@ model.add(Dense(2))
 
 model.summary()
 
-

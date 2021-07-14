@@ -33,4 +33,3 @@ print('예측값 : ', result)
 
 
 
-

@@ -7,6 +7,7 @@ y = np.array([1,2,4,3,5])
 x_pred = [6] #6에 대한 예측값 
 
 model = Sequential()
+
 model.add(Dense(1, input_dim=1))
 
 model.compile(loss='mse', optimizer='adam')
