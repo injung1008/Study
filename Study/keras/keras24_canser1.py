@@ -28,7 +28,7 @@ scaler = StandardScaler()
 scaler.fit(x_train)
 x_train = scaler.transform(x_train)
 x_test = scaler.transform(x_test)
-
+print(x_train)
 model = Sequential()
 model.add(Dense(1, input_dim=30))
 model.add(Dense(100, activation='relu'))
