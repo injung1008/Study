@@ -11,6 +11,15 @@ from tensorflow.keras.datasets import cifar10
 # #전처리 
 
 # print(np.unique(y_train)) #[0 1 2 3 4 5 6 7 8 9]
+from sklearn.preprocessing import OneHotEncoder
+encoder = OneHotEncoder()
+y_train = y_train.reshape(-1,1)
+y_test = y_test.reshape(-1,1)
+
+encoder.fit(y_train)
+y_train = encoder.transform(y_train).toarray() #(60000, 10)
+y_test = encoder.transform(y_test).toarray() #(10000, 10)
+#print(y_test.shape)
 
 #데이터 전처리 
 
@@ -44,17 +53,23 @@ from tensorflow.keras.layers import Dense, Conv2D, MaxPooling2D, Flatten
 
 model = Sequential()
 model.add(Conv2D(10, kernel_size=(2,2), padding='same', input_shape=(32,32,3)))
-model.add(Flatten())                                              #(N,180)
-model.add(Dense(512, activation='relu'))
-model.add(Dense(10, activation='softmax')) # 왜 시그모이드를 사용할까? 
+model.add(Conv2D(20, (2,2)))
+model.add(Conv2D(30, (2,2)))
+# model.add(Conv2D(40, (2,2)))
+model.add(Flatten())                                             
+# model.add(Dense(512, activation='relu'))
+# model.add(Dense(256, activation='relu'))
+model.add(Dense(125, activation='relu'))
+model.add(Dense(65, activation='relu'))
+model.add(Dense(10, activation='softmax'))
 
-model.compile(loss='sparse_categorical_crossentropy',optimizer='adam',
+model.compile(loss='categorical_crossentropy',optimizer='adam',
                     metrics=['accuracy'])
 
 
 
-model.fit(x_train, y_train, epochs=10, verbose=1,
-batch_size=300)
+model.fit(x_train, y_train, epochs=50, verbose=1,
+batch_size=100)
 
 loss = model.evaluate(x_test, y_test)
 print('loss : ', loss)
