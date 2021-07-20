@@ -1,34 +1,23 @@
-#보스톤으로 min max
-
-from sklearn.datasets import load_boston
-from tensorflow.keras.layers import Dense
-from tensorflow.keras.models import Sequential
 import numpy as np
-from sklearn.model_selection import train_test_split
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, SimpleRNN
 
-x = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) # 3행 10열 
-y = np.array([11, 12, 13, 14, 15, 16, 17, 18, 19, 20]) # (10,)
+#1. data
+x = np.array([[1,2],[2,3],[3,4],[4,5],[5,6]])
+#[1,2,3] = 한개의 timesteps 이고 이걸 몇개의 feature로 짜를것인지는 선택의 몫
+y = np.array([3,4,5,6,7])
 
-#print(np.min(x), np.max(x)) # 총 데이터에서 최솟값 =0.0 최댓값 = 711.0
+print(x.shape, y.shape) #(5, 2) (5,)
 
-#데이터 전처리 (최댓값으로 x를나눠준다 - min-max- scaler방법)
-# x = x/711.
-# x = x/np.max(x)
-#x = (x - np.min(x))/ (np.max(x) - np.min(x)) #전체 데이터 정규화
-x_train, x_test, y_train, y_test = train_test_split(x, 
-                        y, train_size = 0.7, shuffle=True, random_state=66)
-from sklearn.preprocessing import MinMaxScaler #min max 정규화 import 
-scaler = MinMaxScaler() 
-# print('x_train:', x_train)
-# print('x_test:', x_test)
+#rnn은 3차원을 받기 때문에 reshape로 feature 1을 추가해서 3차원 만들어줌 
+x = x.reshape(5,2,1)  #3차원 -> (batch_size , timesteps, feature)
+# 4 = 전체 데이터 
 
-#fit = (전처리) 무언가를 훈련,실행 시키다의 개념 공식을 만들어준다 
-scaler.fit(x_train)
+# 모델 구성
+model = Sequential()
+model.add(SimpleRNN(units=10, activation='relu', input_shape=(2,1))) 
+#input_shape=(3,1) 앞에 전체 데이터 무시 (행무시 = 4 )
+model.add(Dense(10, activation='relu'))
+model.add(Dense(1))
 
-# 실행 시킨 결과를 변환시 키는 과정 (배출의 과정)
-x_train = scaler.transform(x_train)
-print('x = ',x_train)
-#스케일릴ㅇ 비율에 맞춰서 트랜스폼 된것이다 
-#x_test = scaler.transform(x_test)
-
-
+model.summary()

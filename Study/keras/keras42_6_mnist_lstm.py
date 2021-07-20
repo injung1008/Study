@@ -1,5 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, LSTM
+
 
 #1. 데이터 
 from tensorflow.keras.datasets import mnist
@@ -10,11 +13,27 @@ from tensorflow.keras.datasets import mnist
 # print(x_test.shape, y_test.shape) #(10000, 28, 28) (10000,) 
 
 # #전처리
+x_train = x_train.reshape(60000, 784)
+x_test = x_test.reshape(10000, 784)
 
 
+from sklearn.preprocessing import StandardScaler,MinMaxScaler,MaxAbsScaler, RobustScaler, QuantileTransformer, PowerTransformer
 
-x_train = x_train.reshape(60000, 28*28)
-x_test = x_test.reshape(10000, 28*28)
+#scaler = StandardScaler()
+scaler = MinMaxScaler()
+#scaler = MaxAbsScaler()
+#scaler = RobustScaler()
+#scaler = QuantileTransformer()
+#scaler = PowerTransformer()
+
+
+scaler.fit(x_train)
+x_train = scaler.transform(x_train)
+x_test = scaler.transform(x_test)
+
+
+x_train = x_train.reshape(60000, 784, 1)
+x_test = x_test.reshape(10000, 784, 1)
 
 
 from sklearn.preprocessing import OneHotEncoder
@@ -34,16 +53,13 @@ print(y_test.shape)
 # reshape = 3차원 데이터 4차원으로 늘리기 데이터의 내용물과 순서가 바뀌면안된다
 
 # #2. 모델링
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Input, Dense, Conv2D, MaxPooling2D, Flatten, GlobalAveragePooling2D
 
 model = Sequential()
-model.add(Dense(512, input_dim=784))                                        
-model.add(Dense(251, activation='relu'))
-model.add(Dense(135, activation='relu'))
-model.add(Dense(64, activation='relu'))
-model.add(Dense(32, activation='relu'))
-model.add(Dense(10, activation='softmax')) 
+model.add(LSTM(units=10, activation='relu', input_shape=(784,1)))
+model.add(Dense(8))
+model.add(Dense(4))
+model.add(Dense(10, activation='softmax')) # 왜 시그모이드를 사용할까? 
+#model.summary()
 
 
 # #3. 컴파일 훈련 metrics = 'acc'
@@ -52,7 +68,7 @@ model.compile(loss='categorical_crossentropy',optimizer='adam',
 
 
 
-model.fit(x_train, y_train, epochs=100, verbose=1, validation_split=0.025,
+model.fit(x_train, y_train, epochs=10, verbose=1,
 batch_size=300)
 
 loss = model.evaluate(x_test, y_test)
@@ -62,5 +78,3 @@ print('metrix : ', loss[1] )
 
 
 #acc로만 판단 
-#metrix :  0.9714000225067139 , epochs=100
-# metrix :  0.9793000221252441

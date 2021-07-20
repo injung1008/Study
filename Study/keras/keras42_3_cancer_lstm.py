@@ -1,21 +1,18 @@
 
-from tensorflow.keras.layers import Dense
+from tensorflow.keras.layers import Dense, LSTM
 from tensorflow.keras.models import Sequential
 from sklearn.model_selection import train_test_split
 import numpy as np
 from sklearn.datasets import load_breast_cancer
 datasets = load_breast_cancer()
 
-print(datasets.DESCR)
-print(datasets.feature_names)
-
 x = datasets.data
 y = datasets.target
 
-print(x.shape, y.shape) #(569, 30) (569,)
-print(y[:20])
-#[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1]
-print(np.unique(y)) #[0 1] 중복되는게 없는 유니크한 값
+# print(x.shape, y.shape) #(569, 30) (569,)
+# print(y[:20])
+# #[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1]
+# print(np.unique(y)) #[0 1] 중복되는게 없는 유니크한 값
 
 #실습 : 모델 시작 !! 
 
@@ -43,19 +40,17 @@ x_test = scaler.transform(x_test)
 # print(y_test)
 
 
-x_train = x_train.reshape(398, 10,3, 1) 
-x_test = x_test.reshape(171, 10,3, 1) 
+x_train = x_train.reshape(398, 30, 1) 
+x_test = x_test.reshape(171, 30, 1) 
 
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Conv2D, MaxPooling2D, Flatten
 
 model = Sequential()
-model.add(Conv2D(100, kernel_size=(2,1), padding='same', input_shape=(10,3,1)))
-model.add(Conv2D(100, (2,1)))
-model.add(Flatten())                                              
-model.add(Dense(100, activation='relu'))
-model.add(Dense(64, activation='relu'))
-model.add(Dense(32, activation='relu'))
+model.add(LSTM(units=10, activation='relu', input_shape=(30,1)))
+model.add(Dense(8))
+model.add(Dense(4))
+model.add(Dense(1))
 model.add(Dense(1, activation='sigmoid'))
 model.compile(loss='binary_crossentropy', optimizer='adam'
                          , metrics=['accuracy']) 
@@ -65,4 +60,4 @@ model.fit(x_train, y_train, epochs=100, verbose=1, batch_size=10, validation_spl
 loss = model.evaluate(x_test, y_test)
 print('acc : ', loss[1])
 
-#acc :  [0.4338623285293579, 0.9473684430122375]
+#acc :  acc :  0.9298245906829834

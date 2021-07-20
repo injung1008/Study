@@ -1,9 +1,10 @@
 #from sklearn.preprocessing import MaxAbsScaler, RobustScaler, QuantileTransformer, PowerTransformer
 
-#MinMaxScaler - 모든 요소값이 0-1사이에 있도록 재조정한다. 다만 이상치가 있는 경우 반환된 값이 매우 좁은 
-#범위로 압축될 수 있다. 
+#MinMaxScaler: 모든 값이 0-1의 값을 가지게 데이터를 정규화 한다 하지만 이상치가 있을 경우 변환값이 매우 좁은 범위로 압축 될 수 있다. 
+#데이터의 분포가 몰려있을 경우에도 비효율 적이다 
 
-#StandardScaler - 표준 정규분포로 전환 시켜줌 평균 0 표준편차1로 만들어준다 / 이상치 영향 잘받음 
+#StandardScaler: 평균을 사용하지 않고 데이터를 단위 분산으로 조정한다 표준정규분포로 평균 0 표준편차 1을 유지 한다 하지만 
+# 이상치가 있다면 평균과 표편차에 영향을 미쳐 데이터의 분포가 달라지게된다 
 
 #MaxAbsScaler : 최대 절대값과 0이 각각 1, 0 이 되도록 스케일링 
 # 절대값이 0-1사이에 매핑되도록 한다. 즉 -1 -1 사이로 재조정한다. 

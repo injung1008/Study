@@ -1,7 +1,7 @@
 # 다중분류 ( y가 0,1,2로 이루어져 있을때)
 import numpy as np
 from sklearn.datasets import load_iris
-from tensorflow.keras.layers import Dense
+from tensorflow.keras.layers import Dense, LSTM
 from tensorflow.keras.models import Sequential
 from sklearn.model_selection import train_test_split
 import numpy as np
@@ -41,8 +41,8 @@ x_test = scaler.transform(x_test)
 # print(y_train.shape)  #(105, 3)
 # print(y_test)
 
-x_train = x_train.reshape(105, 2,2, 1) 
-x_test = x_test.reshape(45, 2,2, 1) 
+x_train = x_train.reshape(105, 4, 1) 
+x_test = x_test.reshape(45, 4, 1) 
 
 
 
@@ -50,12 +50,9 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Conv2D, MaxPooling2D, Flatten
 
 model = Sequential()
-model.add(Conv2D(100, kernel_size=(1,1), padding='same', input_shape=(2,2,1)))
-model.add(Conv2D(100, (1,1)))
-model.add(Flatten())                                              
-model.add(Dense(100, activation='relu'))
-model.add(Dense(64, activation='relu'))
-model.add(Dense(32, activation='relu'))
+model.add(LSTM(units=10, activation='relu', input_shape=(4,1)))
+model.add(Dense(8))
+model.add(Dense(4))
 model.add(Dense(3, activation='softmax'))
 model.compile(loss='categorical_crossentropy', optimizer='adam'
                          , metrics=['accuracy']) 

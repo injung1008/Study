@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from tensorflow.keras.layers import Dense
+from tensorflow.keras.layers import Dense, LSTM
 from tensorflow.keras.models import Sequential
 from sklearn.model_selection import train_test_split
 
@@ -48,22 +48,16 @@ x_test = scaler.transform(x_test)
 # print(y_train.shape)  #(105, 3)
 # print(y_test)
 
-x_train = x_train.reshape(3428, 11,1, 1) 
-x_test = x_test.reshape(1470, 11,1, 1) 
+x_train = x_train.reshape(3428, 11, 1) 
+x_test = x_test.reshape(1470, 11, 1) 
 
 
 
-
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Conv2D, MaxPooling2D, Flatten
 
 model = Sequential()
-model.add(Conv2D(100, kernel_size=(1,1), padding='same', input_shape=(11,1,1)))
-model.add(Conv2D(100, (1,1)))
-model.add(Flatten())                                              
-model.add(Dense(100, activation='relu'))
-model.add(Dense(64, activation='relu'))
-model.add(Dense(32, activation='relu'))
+model.add(LSTM(units=10, activation='relu', input_shape=(11,1)))
+model.add(Dense(8))
+model.add(Dense(4))
 model.add(Dense(7, activation='softmax'))
 model.compile(loss='categorical_crossentropy', optimizer='adam'
                          , metrics=['accuracy']) 
@@ -76,7 +70,7 @@ from tensorflow.keras.callbacks import EarlyStopping
 
 #es = EarlyStopping(monitor='accuracy', patience=5, mode='max', verbose=1)
 
-model.fit(x_train, y_train, epochs=500, verbose=1,
+model.fit(x_train, y_train, epochs=10, verbose=1,
 batch_size=100, validation_split=0.02)
 
 loss = model.evaluate(x_test, y_test)
