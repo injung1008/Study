@@ -26,7 +26,7 @@ x_train = scaler.transform(x_train)
 x_test = scaler.transform(x_test)
 print(x_test)
 
-
+#차원 늘려주기 
 x_train = x_train.reshape(60000, 784,1) 
 x_test = x_test.reshape(10000, 784, 1) 
 
@@ -43,10 +43,11 @@ y_test = encoder.transform(y_test).toarray() #(10000, 10)
 
 #2. 모델링
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, LSTM
+from tensorflow.keras.layers import Dense, LSTM, Conv1D, Flatten
 
 model = Sequential()
-model.add(LSTM(units=10, activation='relu', input_shape=(784,1)))
+model.add(Conv1D(64, 2,input_shape=(784,1)))
+model.add(Flatten())
 model.add(Dense(8))
 model.add(Dense(4))
 model.add(Dense(10, activation='softmax')) # 왜 시그모이드를 사용할까? 
@@ -63,3 +64,5 @@ loss = model.evaluate(x_test, y_test)
 print('loss : ', loss)
 print('metrix : ', loss[1] )
 
+
+#metrix :  0.8108000159263611

@@ -71,3 +71,8 @@ split_y(x_test,x_train,y_test,y_train,x_predict)
 
 
 
+
+
+
+
+

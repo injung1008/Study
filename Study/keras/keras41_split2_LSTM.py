@@ -22,26 +22,14 @@ dataset = split_x(a,size)
 
 x = dataset[:,:4]
 y = dataset[:, 4]
+x = x.reshape(96,4,1)
 
+# x_predict = x_predict[-4:]
+# print(x_predict)
+# x_predict = x_predict.reshape(1,4,1)
+# print(x_predict.shape)
 
-from sklearn.model_selection import train_test_split
-
-x_train, x_test, y_train, y_test = train_test_split(x, y, 
-        train_size = 0.7, shuffle=True, random_state=9)
-x_test = x_test.reshape(29,4,1)
-x_train = x_train.reshape(67,4,1)
-#y_test = x_test.reshape(29,4,1)
-y_train = x_train.reshape(67,4,1)
-
-print(y_train.shape)
-
-
-x_predict = x_predict[-4:]
-print(x_predict)
-x_predict = x_predict.reshape(1,4,1)
-print(x_predict.shape)
-
-def split_y(x_test,x_train,y_test,y_train,x_predict):
+def split_y(x,y,x_predict):
 
     for i in range(2):
         x_predict = x_predict[-4:]
@@ -53,20 +41,20 @@ def split_y(x_test,x_train,y_test,y_train,x_predict):
         model.add(Dense(4))
         model.add(Dense(1))
         model.compile(loss='mse', optimizer='adam')
-        model.fit(x_train, y_train, epochs=2, batch_size=1)
+        model.fit(x,y, epochs=2, batch_size=1)
         results = model.predict(x_predict)
-        print('results 1 :', results)
+        #x_predict = x_predict.reshape(1,4)
+        print(results.shape) #(1, 1)
+        print(x_predict.shape) #(1, 4, 1)
+        #넘파이에 추가할때는 np.append(넘파이, 추가할값) 
+        # -> shape가 데이터 배열로만으로 바뀌게된다
         x_predict = np.append(x_predict,results)
-        result2 = model.predict(x_test)
-        print('result2 : ',result2)
-        r2 = r2_score(y_test, result2)
-        print('r2 : ', r2)     
+        print(x_predict.shape) #(5,)
+
         
-    return result2, results
+    return results
 
-split_y(x_test,x_train,y_test,y_train,x_predict)
-
-
+split_y(x, y, x_predict)
 
 
 
