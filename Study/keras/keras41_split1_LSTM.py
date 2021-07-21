@@ -1,73 +1,59 @@
 #실습
-# 1_100까지의 데이터를
+ #106 예측하기 
 import numpy as np
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, LSTM
 from sklearn.metrics import r2_score
 
 a = np.array(range(1,101))
-x_predict = np.array(range(96, 105))
-size = 5
+x_predict = np.array(range(96, 106))
+size = 6
+#
 
-def split_x(dataset, size):
+def split_x(a, size):
     aaa = []
-    for i in range(len(dataset) - size + 1):
-        subset = dataset[i : (i+size)]
+    for i in range(len(a) - size + 1):
+        subset = a[i : (i+size)]
         aaa.append(subset)
     return np.array(aaa)
 
 dataset = split_x(a,size)
+#print(dataset.shape) #(95, 6)
 
-# print(dataset)
+x_train = dataset[:,:5].reshape(95,5,1)
+y_train = dataset[:, 5]
+#print(x_train.shape) #(95, 5)
+#print(x_predict) #[ 96  97  98  99 100 101 102 103 104 105] 
 
-x = dataset[:,:4]
-y = dataset[:, 4]
+test_set = split_x(x_predict,size)
 
+x_test = test_set[:,:5].reshape(5,5,1)
+#print(x_test.shape) #(5, 5)
 
-from sklearn.model_selection import train_test_split
+y_test = test_set[:,5]
+#print(y_test)
 
-x_train, x_test, y_train, y_test = train_test_split(x, y, 
-        train_size = 0.7, shuffle=True, random_state=9)
-x_test = x_test.reshape(29,4,1)
-x_train = x_train.reshape(67,4,1)
-#y_test = x_test.reshape(29,4,1)
-y_train = x_train.reshape(67,4,1)
+model = Sequential()
+model.add(LSTM(units=10, activation='relu', input_shape=(5,1)))
+model.add(Dense(8))
+model.add(Dense(4))
+model.add(Dense(1))
 
-print(y_train.shape)
+model.compile(loss='mse', optimizer='adam')
+model.fit(x_train,y_train, epochs=100, batch_size=1)
+results = model.predict(x_test)
+print(x_test)
+print(y_test)
+print(results)
+from sklearn.metrics import r2_score
+r2 = r2_score(y_test, results)
+print('r2 : ', r2)    
 
-
-x_predict = x_predict[-4:]
-print(x_predict)
-x_predict = x_predict.reshape(1,4,1)
-print(x_predict.shape)
-
-def split_y(x_test,x_train,y_test,y_train,x_predict):
-
-    for i in range(2):
-        x_predict = x_predict[-4:]
-        print('f')
-        x_predict = x_predict.reshape(1,4,1)
-        model = Sequential()
-        model.add(LSTM(units=100, activation='relu', input_shape=(4,1)))
-        model.add(Dense(8))
-        model.add(Dense(4))
-        model.add(Dense(1))
-        model.compile(loss='mse', optimizer='adam')
-        model.fit(x_train, y_train, epochs=2, batch_size=1)
-        results = model.predict(x_predict)
-        print('results 1 :', results)
-        x_predict = np.append(x_predict,results)
-        result2 = model.predict(x_test)
-        print('result2 : ',result2)
-        r2 = r2_score(y_test, result2)
-        print('r2 : ', r2)     
-        
-    return result2, results
-
-split_y(x_test,x_train,y_test,y_train,x_predict)
-
-
-
-
-
-
+'''
+[[100.943436]
+ [101.942314]
+ [102.94121 ]
+ [103.94014 ]
+ [104.93909 ]]
+r2 :  0.9982722655113321
+'''
