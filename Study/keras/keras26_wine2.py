@@ -8,8 +8,8 @@ df = pd.read_csv('./_data/winequality-white.csv', sep=';',
                         index_col=None, header=0)
 # ./ : 현재폴더 ../: 상위폴더
 
-# print(df)
-# print(df.shape) #(4898, 12) 
+print(df)
+print(df.shape) #(4898, 12) 
 
 
 # print(datasets.describe())
@@ -33,60 +33,60 @@ x = datasets[:,0:11]
 y = datasets[:,[-1]]
 
 
-# print(np.unique(y)) #7개 [3 4 5 6 7 8 9]
+# # print(np.unique(y)) #7개 [3 4 5 6 7 8 9]
 
-# from tensorflow.keras.utils import to_categorical
-# y = to_categorical(y)
+# # from tensorflow.keras.utils import to_categorical
+# # y = to_categorical(y)
 
-x_train, x_test, y_train, y_test =train_test_split(x,y,
-    train_size = 0.7, shuffle = True, random_state=9)
+# x_train, x_test, y_train, y_test =train_test_split(x,y,
+#     train_size = 0.7, shuffle = True, random_state=9)
 
-from sklearn.preprocessing import OneHotEncoder
-encoder = OneHotEncoder()
+# from sklearn.preprocessing import OneHotEncoder
+# encoder = OneHotEncoder()
 
-encoder.fit(y_train)
-y_train = encoder.transform(y_train).toarray() 
-y_test = encoder.transform(y_test).toarray() 
-
-
-# print(x_test.shape)
+# encoder.fit(y_train)
+# y_train = encoder.transform(y_train).toarray() 
+# y_test = encoder.transform(y_test).toarray() 
 
 
-from sklearn.preprocessing import MinMaxScaler,StandardScaler,MaxAbsScaler, RobustScaler, QuantileTransformer, PowerTransformer
-
-scaler = MinMaxScaler()
-#scaler = StandardScaler()
-#scaler = MaxAbsScaler()
-#scaler = RobustScaler()
-#scaler = QuantileTransformer()
-#scaler = PowerTransformer()
-
-scaler.fit(x_train)
-x_train = scaler.transform(x_train)
-x_test = scaler.transform(x_test)
+# # print(x_test.shape)
 
 
+# from sklearn.preprocessing import MinMaxScaler,StandardScaler,MaxAbsScaler, RobustScaler, QuantileTransformer, PowerTransformer
 
-model = Sequential()
-model.add(Dense(1, input_dim=11)) 
-model.add(Dense(512, activation='relu'))
-model.add(Dense(256, activation='relu'))
-model.add(Dense(125, activation='relu'))
-model.add(Dense(67, activation='relu'))
-model.add(Dense(7, activation='softmax')) #y lable 3ea
+# scaler = MinMaxScaler()
+# #scaler = StandardScaler()
+# #scaler = MaxAbsScaler()
+# #scaler = RobustScaler()
+# #scaler = QuantileTransformer()
+# #scaler = PowerTransformer()
 
-#훈련
-model.compile(loss='categorical_crossentropy',optimizer='adam',
-                    metrics=['accuracy'])
+# scaler.fit(x_train)
+# x_train = scaler.transform(x_train)
+# x_test = scaler.transform(x_test)
 
-from tensorflow.keras.callbacks import EarlyStopping
 
-#es = EarlyStopping(monitor='accuracy', patience=5, mode='max', verbose=1)
 
-model.fit(x_train, y_train, epochs=500, verbose=1,
-batch_size=100, validation_split=0.02)
+# model = Sequential()
+# model.add(Dense(1, input_dim=11)) 
+# model.add(Dense(512, activation='relu'))
+# model.add(Dense(256, activation='relu'))
+# model.add(Dense(125, activation='relu'))
+# model.add(Dense(67, activation='relu'))
+# model.add(Dense(7, activation='softmax')) #y lable 3ea
 
-loss = model.evaluate(x_test, y_test)
-print('loss : ', loss)
-print('metrix : ', loss[1] )
+# #훈련
+# model.compile(loss='categorical_crossentropy',optimizer='adam',
+#                     metrics=['accuracy'])
+
+# from tensorflow.keras.callbacks import EarlyStopping
+
+# #es = EarlyStopping(monitor='accuracy', patience=5, mode='max', verbose=1)
+
+# model.fit(x_train, y_train, epochs=500, verbose=1,
+# batch_size=100, validation_split=0.02)
+
+# loss = model.evaluate(x_test, y_test)
+# print('loss : ', loss)
+# print('metrix : ', loss[1] )
 

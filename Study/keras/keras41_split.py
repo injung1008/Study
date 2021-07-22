@@ -9,6 +9,7 @@ def split_x(dataset, size):
     for i in range(len(dataset) - size + 1):
         subset = dataset[i : (i+size)]
         aaa.append(subset)
+        print(aaa)
     return np.array(aaa)
 
 dataset = split_x(a,size)
