@@ -2,7 +2,7 @@ import numpy as np
 from sklearn.datasets import load_diabetes
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from tensorflow.keras.models import Model,Sequential
+from tensorflow.keras.models import Model,Sequential,load_model
 from tensorflow.keras.layers import Dense, Input,LSTM 
 import tensorflow as tf
 from datetime import datetime
@@ -70,7 +70,7 @@ from sklearn.preprocessing import MinMaxScaler
 
 scaler = MinMaxScaler()
 scaler2 = MinMaxScaler()
-scale_cols = ['시가','고가','저가','거래량']
+scale_cols = ['종가','고가','저가','거래량']
 
 # df_scaled = scaler.fit_transform(df_sam[scale_cols]) #삼성값 전처리 훈련하기
 # df_scaled = pd.DataFrame(df_scaled) #삼성 데이터프레임화 시키기
@@ -91,21 +91,21 @@ df_scaled_sk_train = pd.DataFrame(df_scaled_sk_train)#삼성 데이터프레임�
 df_scaled_sk_test = scaler2.transform(df_sk_test[scale_cols])
 df_scaled_sk_test = pd.DataFrame(df_scaled_sk_test)#삼성 데이터프레임화 시키기
 
-df_scaled_train.columns = ['시가','고가','저가','거래량'] #칼럼명 넣어주기 
-df_scaled_test.columns = ['시가','고가','저가','거래량'] #칼럼명 넣어주기 
-df_scaled_sk_train.columns = ['시가','고가','저가','거래량'] #칼럼명 넣어주기
-df_scaled_sk_test.columns = ['시가','고가','저가','거래량'] #칼럼명 넣어주기
+df_scaled_train.columns = ['종가','고가','저가','거래량'] #칼럼명 넣어주기 
+df_scaled_test.columns = ['종가','고가','저가','거래량'] #칼럼명 넣어주기 
+df_scaled_sk_train.columns = ['종가','고가','저가','거래량'] #칼럼명 넣어주기
+df_scaled_sk_test.columns = ['종가','고가','저가','거래량'] #칼럼명 넣어주기
 
-#삼성 종가 
-df_sam_train_label = df_sam_train['종가'].reset_index()
-df_sam_train_label = df_sam_train_label['종가']
-df_sam_test_label = df_sam_test['종가'].reset_index()
-df_sam_test_label = df_sam_test_label['종가']
-#sk 종가
-df_sk_train_label = df_sk_train['종가'].reset_index()
-df_sk_train_label = df_sk_train_label['종가']
-df_sk_test_label = df_sk_test['종가'].reset_index()
-df_sk_test_label = df_sk_test_label['종가']
+#삼성 시가 
+df_sam_train_label = df_sam_train['시가'].reset_index()
+df_sam_train_label = df_sam_train_label['시가']
+df_sam_test_label = df_sam_test['시가'].reset_index()
+df_sam_test_label = df_sam_test_label['시가']
+#sk 시가
+df_sk_train_label = df_sk_train['시가'].reset_index()
+df_sk_train_label = df_sk_train_label['시가']
+df_sk_test_label = df_sk_test['시가'].reset_index()
+df_sk_test_label = df_sk_test_label['시가']
 #print(df_sk_test_label)
 
 # #다시 결합해주기
@@ -133,8 +133,8 @@ def make_dataset(data, label, window_size=20):
 
 
 # #^^
-feature_cols = ['시가','고가','저가','거래량']
-label_cols = ['종가']
+feature_cols = ['종가','고가','저가','거래량']
+label_cols = ['시가']
 #2400개의 데이터 
 #split 돌리기 위해서 데이터 피쳐와 종가로 나눠주기 
 
@@ -178,71 +178,13 @@ from keras.callbacks import EarlyStopping, ModelCheckpoint
 from tensorflow.keras.layers import Dense, LSTM, Conv1D, Flatten
 
 
- 
-#2-1 모델1 구성 
-input1 = Input(shape=(x_sam_train.shape[1], x_sam_train.shape[2]))
-dense1 = LSTM(units=100, activation='relu',return_sequences=False)(input1)
-dense2 = Dense(80)(dense1)
-dense3 = Dense(40)(dense2)
-output1 = Dense(10)(dense3)
 
-#2-2 모델2 구성 
-input2 = Input(shape=(x_sk_train.shape[1], x_sk_train.shape[2]))
-dense11 = LSTM(units=100, activation='relu',return_sequences=False)(input2)
-dense12 = Dense(80, activation='relu')(dense11)
-dense13 = Dense(40, activation='relu')(dense12)
-dense14 = Dense(20, activation='relu')(dense13)
-output2 = Dense(1)(dense14)
-
-from tensorflow.keras.layers import concatenate, Concatenate
-merge1 = concatenate([output1, output2])
-merge2 = Dense(2)(merge1)
-merge3 = Dense(4, activation='relu')(merge2)
-
-last_output = Dense(1)(merge2)
-
-#concatenate, Concatenate 소문자와 대문자의 차이는 소문자 = 메소드, 대문자- 클래스
-model = Model(inputs=[input1,input2] , outputs=last_output)
-
-
-#model.summary()
-model.compile(loss='mse', optimizer='adam')
-
-# #@ 텐서보드
-logdir="logs\\fit\\" + datetime.now().strftime("%Y%m%d-%H%M%S")
-tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=logdir,histogram_freq=1)
-
-from keras.callbacks import EarlyStopping, ModelCheckpoint
-es = EarlyStopping(monitor='val_loss', patience=20, mode='auto', verbose=1,
-                    restore_best_weights=True)
-
-##############################################################################                    
-import datetime
-date = datetime.datetime.now()
-date_time = date.strftime("%m%d_%H%M")
-
-filepath = 'D:\Study\Samsung\_save\ModelCheckPoint'
-filename = '.{epoch:04d}-{val_loss:.4f}.hdf5'
-#filename = epoch값과 loss값이 파일명에 나올것이다 
-modelpath = "".join([filepath, "samsung_", date_time, "_", filename])
-
-#체크포인트가 갱신될때마다 파일이 생성이 된다 
-#실질적으로 맨 마지막이 가장 높다
-################################################################################3
-
-mcp = ModelCheckpoint(monitor = 'val_loss', mode='auto', batch_size = 10,verbose=1, save_weights_only= False
-                        ,filepath = modelpath)    
-
-
-
-
-model.fit([x_sam_train,x_sk_train], [y_sam_train,y_sk_train]
-, epochs=100, batch_size=10, verbose=1 ,validation_split=0.15 ,callbacks=[es,mcp,tensorboard_callback])
-
-
-model.save('./_save/ModelCheckPoint/samsung_model_.h5')
-
-#평가
+#!model = load_model('D:\Study\Samsung\_save\ModelCheckPointsamsung_siga0723_1159_.0083-11962648.0000.hdf5') # [77052.05 ]]
+#
+#!model = load_model('D:\Study\Samsung\_save\ModelCheckPointsamsung_siga0723_1426_.0099-11302288.0000.hdf5') # [80701.25 ]]
+#model = load_model('D:\Study\Samsung\_save\ModelCheckPointsamsung_siga0723_1426_.0100-12986655.0000.hdf5') # [77615.75 ]]
+#^^ model = load_model('D:\Study\Samsung\_save\ModelCheckPointsamsung_siga0723_1426_.0098-11917253.0000.hdf5') # [82864.95 ]]
+model = load_model('D:\Study\Samsung\_save\ModelCheckPointsamsung_siga0723_1426_.0086-11593410.0000.hdf5')
 loss = model.evaluate([x_sam_test, x_sk_test],y_sam_test)
 
 print('loss : ', loss )
@@ -250,3 +192,4 @@ print('loss : ', loss )
 result = model.predict([x_sam_test,x_sk_test])
 print('삼성 : ', result)
 
+#tensorboard --logdir=./logs/fit/

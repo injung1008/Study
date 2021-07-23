@@ -2,10 +2,10 @@ import numpy as np
 from sklearn.datasets import load_diabetes
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from tensorflow.keras.models import Model,Sequential
-from tensorflow.keras.layers import Dense, Input,LSTM
-
-
+from tensorflow.keras.models import Model,Sequential, load_model
+from tensorflow.keras.layers import Dense, Input,LSTM 
+import tensorflow as tf
+from datetime import datetime
 df_sk = pd.read_csv('D:\Study\_data\SK주가 20210721.csv', 
                         index_col=None, header=0, encoding='cp949')
 
@@ -28,8 +28,13 @@ df_sk = df_sk.loc[:2600]
 # print(df_sk)
 
 #내림차순으로 바꿔주기 
-df_sam = df_sam.sort_values(by=['일자'])
-df_sk = df_sk.sort_values(by=['일자'])
+df_sam.set_index('일자', inplace=True)
+df_sk.set_index('일자', inplace=True)
+
+df_sam = df_sam.sort_index(ascending=True)
+df_sk = df_sk.sort_index(ascending=True)
+
+#print(df_sam)
 
 # print(df_sam)
 # print(df_sk)
@@ -45,7 +50,7 @@ sk = df_sk.to_numpy()
 #종가 따로 빼놓기
 df_sam_label = df_sam['종가']
 df_sk_label = df_sk['종가']
-
+print(df_sam_label)
 
 from sklearn.preprocessing import MinMaxScaler
 
@@ -57,17 +62,27 @@ df_scaled = pd.DataFrame(df_scaled) #삼성 데이터프레임화 시키기
 df_scaled_sk = scaler.fit_transform(df_sk[scale_cols])
 df_scaled_sk = pd.DataFrame(df_scaled_sk) #sk 데이터프레임화 시키기
 
+df_sam_label = df_sam['종가'].reset_index()
+
+df_sam_label = df_sam_label['종가']
+print(df_sam_label)
+df_sk_label = df_sk['종가'].reset_index()
+df_sk_label = df_sk_label['종가']
+
+#print(df_sam_label)
+
 df_scaled.columns = ['시가','고가','저가','거래량'] #칼럼명 넣어주기 
 df_scaled_sk.columns = ['시가','고가','저가','거래량'] #칼럼명 넣어주기 
 
+# #print(df_scaled)
 
 #다시 결합해주기
 df_scaled= df_scaled.join(df_sam_label)
 df_scaled_sk= df_scaled_sk.join(df_sk_label)
-
+print(df_scaled)
 # print(df_scaled.shape) #(2601, 5)
 # print(df_scaled_sk.shape) #(2601, 5)
-
+#print(df_scaled)
 
 #학습데이터 생성하기size= 내가 얼마동안의 주가 데이터에 기반하여
 #다음날 종가를 예측할 것인가를 정하는 파라미터이다. 즉 내가 과거 20일을 기반으로 내일데이터를
@@ -76,18 +91,16 @@ df_scaled_sk= df_scaled_sk.join(df_sk_label)
 #test_size = 200은 학습은 과거부터  200일 이전의 데이터를 학습하게 되고, test를 위해서 이후200일의
 #데이터로 모델이 주가를 예측하도록 한다음, 실제 데이터와 오차가 얼마나 있는지 확인 해본다 
 #! train 만들기
-# test_size = 200
-# train = df_scaled[:-test_size] # 데이터 프레임은 행을 어디서 뽑을건지 [:]0-2400까지만 뽑는것 
-# test = df_scaled[-test_size:] #2400-2600 까지 뽑기 (현재데이터 기준 )
+test_size = 200
+train = df_scaled[:-test_size] # 데이터 프레임은 행을 어디서 뽑을건지 [:]0-2400까지만 뽑는것 
+test = df_scaled[-test_size:] #2400-2600 까지 뽑기 (현재데이터 기준 )
 
-train = df_scaled[201:2601] 
-test = df_scaled[:201] 
-#sk 
 
-train_sk = df_scaled_sk[201:2601] 
-test_sk = df_scaled_sk[:201] 
+
+train_sk = df_scaled_sk[:-test_size] 
+test_sk = df_scaled_sk[-test_size:] 
 # print(train)
-# print(train_sk) #(2400,5)
+print(train_sk) #(2400,5)
 
 # #dataset을 만들어주는 함수
 
@@ -139,14 +152,16 @@ x_sk_train,y_sk_train = make_dataset(train_feature_sk, train_label,20)
 # # #! 실제로 테스트 해볼 최근 200일의 데이터 
 x_sam_test, y_sam_test = make_dataset(test_feature, test_label,20)
 x_sk_test, y_sk_test = make_dataset(test_feature_sk, test_label_sk,20)
-print(x_sk_test.shape,x_sk_train.shape)#(180, 20, 4) (2379, 20, 4)
-print(x_sam_test.shape,x_sam_train.shape)#(180, 20, 4) (2379, 20, 4)
+# print(x_sk_test.shape,x_sk_train.shape)#(180, 20, 4) (2379, 20, 4)
+# print(x_sam_test.shape,x_sam_train.shape)#(180, 20, 4) (2379, 20, 4)
+# print(y_sam_test)
 
-
-from keras.models import Sequential, Model, load_model
-from keras.layers import Dense
+from keras.models import Sequential, Model
+from keras.layers import Dense,Conv1D
 from keras.callbacks import EarlyStopping, ModelCheckpoint
-from keras.layers import LSTM, Input
+from tensorflow.keras.layers import Dense, LSTM, Conv1D, Flatten
+
+
 
 # #2-1 모델1 구성 
 # input1 = Input(shape=(x_sam_train.shape[1], x_sam_train.shape[2]))
@@ -236,7 +251,13 @@ from keras.layers import LSTM, Input
 #평가
 
 #model = load_model('D:\Study\Samsung\_save\ModelCheckPointsamsung_0723_0205_.0008-2222.2498.hdf5') #[[61591.805]
-model = load_model('D:\Study\Samsung\_save\ModelCheckPointsamsung_0723_1113_.0023-21283812.0000.hdf5') # [[63855.05 ]
+#!model = load_model('D:\Study\Samsung\_save\ModelCheckPointsamsung_0723_1152_.0100-12545322.0000.hdf5') #  [ 82269.05 ]] - 시가
+
+model = load_model('D:\Study\Samsung\_save\ModelCheckPointsamsung_siga0723_1159_.0083-11962648.0000.hdf5')
+
+
+
+
 loss = model.evaluate([x_sam_test, x_sk_test],y_sam_test)
 
 print('loss : ', loss )

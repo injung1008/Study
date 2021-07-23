@@ -38,51 +38,11 @@ df_sk = df_sk.sort_index(ascending=True)
 
 # print(df_sam)
 # print(df_sk)
-df_sam = pd.DataFrame(df_sam, columns=['시가','고가','저가','거래량','종가'])
-df_sk = pd.DataFrame(df_sk, columns=['시가','고가','저가','거래량','종가'])
 
-# print(df_sam) #[2601 rows x 5 columns]
-# print(df_sk) #[2601 rows x 5 columns]
+# df_sam = pd.DataFrame(df_sam, columns=['시가','고가','저가','거래량','종가'])
+# df_sk = pd.DataFrame(df_sk, columns=['시가','고가','저가','거래량','종가'])
 
-#samsung = df_sam.to_numpy()
-sk = df_sk.to_numpy()
 
-#종가 따로 빼놓기
-df_sam_label = df_sam['종가']
-df_sk_label = df_sk['종가']
-print(df_sam_label)
-
-from sklearn.preprocessing import MinMaxScaler
-
-scaler = MinMaxScaler()
-
-scale_cols = ['시가','고가','저가','거래량']
-df_scaled = scaler.fit_transform(df_sam[scale_cols]) #삼성값 전처리 훈련하기
-df_scaled = pd.DataFrame(df_scaled) #삼성 데이터프레임화 시키기
-df_scaled_sk = scaler.fit_transform(df_sk[scale_cols])
-df_scaled_sk = pd.DataFrame(df_scaled_sk) #sk 데이터프레임화 시키기
-
-df_sam_label = df_sam['종가'].reset_index()
-
-df_sam_label = df_sam_label['종가']
-print(df_sam_label)
-df_sk_label = df_sk['종가'].reset_index()
-df_sk_label = df_sk_label['종가']
-
-#print(df_sam_label)
-
-df_scaled.columns = ['시가','고가','저가','거래량'] #칼럼명 넣어주기 
-df_scaled_sk.columns = ['시가','고가','저가','거래량'] #칼럼명 넣어주기 
-
-# #print(df_scaled)
-
-#다시 결합해주기
-df_scaled= df_scaled.join(df_sam_label)
-df_scaled_sk= df_scaled_sk.join(df_sk_label)
-print(df_scaled)
-# print(df_scaled.shape) #(2601, 5)
-# print(df_scaled_sk.shape) #(2601, 5)
-#print(df_scaled)
 
 #학습데이터 생성하기size= 내가 얼마동안의 주가 데이터에 기반하여
 #다음날 종가를 예측할 것인가를 정하는 파라미터이다. 즉 내가 과거 20일을 기반으로 내일데이터를
@@ -92,17 +52,68 @@ print(df_scaled)
 #데이터로 모델이 주가를 예측하도록 한다음, 실제 데이터와 오차가 얼마나 있는지 확인 해본다 
 #! train 만들기
 test_size = 200
-train = df_scaled[:-test_size] # 데이터 프레임은 행을 어디서 뽑을건지 [:]0-2400까지만 뽑는것 
-test = df_scaled[-test_size:] #2400-2600 까지 뽑기 (현재데이터 기준 )
+df_sam_train = df_sam[:-test_size] # 데이터 프레임은 행을 어디서 뽑을건지 [:]0-2400까지만 뽑는것 
+df_sam_test = df_sam[-test_size:] #2400-2600 까지 뽑기 (현재데이터 기준 )
+
+
+df_sk_train = df_sk[:-test_size] 
+df_sk_test = df_sk[-test_size:] 
 
 
 
-train_sk = df_scaled_sk[:-test_size] 
-test_sk = df_scaled_sk[-test_size:] 
-# print(train)
-print(train_sk) #(2400,5)
 
-# #dataset을 만들어주는 함수
+from sklearn.preprocessing import MinMaxScaler
+
+scaler = MinMaxScaler()
+scaler2 = MinMaxScaler()
+scale_cols = ['종가','고가','저가','거래량']
+
+# df_scaled = scaler.fit_transform(df_sam[scale_cols]) #삼성값 전처리 훈련하기
+# df_scaled = pd.DataFrame(df_scaled) #삼성 데이터프레임화 시키기
+# df_scaled_sk = scaler.fit_transform(df_sk[scale_cols])
+# df_scaled_sk = pd.DataFrame(df_scaled_sk) #sk 데이터프레임화 시키기
+#삼성
+scaler.fit(df_sam_train[scale_cols])
+df_scaled_train = scaler.transform(df_sam_train[scale_cols])
+df_scaled_train = pd.DataFrame(df_scaled_train)#삼성 데이터프레임화 시키기
+df_scaled_test = scaler.transform(df_sam_test[scale_cols])
+df_scaled_test = pd.DataFrame(df_scaled_test)#삼성 데이터프레임화 시키기
+
+#sk
+
+scaler2.fit(df_sk_train[scale_cols])
+df_scaled_sk_train = scaler2.transform(df_sk_train[scale_cols])
+df_scaled_sk_train = pd.DataFrame(df_scaled_sk_train)#삼성 데이터프레임화 시키기
+df_scaled_sk_test = scaler2.transform(df_sk_test[scale_cols])
+df_scaled_sk_test = pd.DataFrame(df_scaled_sk_test)#삼성 데이터프레임화 시키기
+
+df_scaled_train.columns = ['종가','고가','저가','거래량'] #칼럼명 넣어주기 
+df_scaled_test.columns = ['종가','고가','저가','거래량'] #칼럼명 넣어주기 
+df_scaled_sk_train.columns = ['종가','고가','저가','거래량'] #칼럼명 넣어주기
+df_scaled_sk_test.columns = ['종가','고가','저가','거래량'] #칼럼명 넣어주기
+
+#삼성 시가 
+df_sam_train_label = df_sam_train['시가'].reset_index()
+df_sam_train_label = df_sam_train_label['시가']
+df_sam_test_label = df_sam_test['시가'].reset_index()
+df_sam_test_label = df_sam_test_label['시가']
+#sk 시가
+df_sk_train_label = df_sk_train['시가'].reset_index()
+df_sk_train_label = df_sk_train_label['시가']
+df_sk_test_label = df_sk_test['시가'].reset_index()
+df_sk_test_label = df_sk_test_label['시가']
+#print(df_sk_test_label)
+
+# #다시 결합해주기
+train= df_scaled_train.join(df_sam_train_label)
+test= df_scaled_test.join(df_sam_test_label)
+#sk 결합
+train_sk = df_scaled_sk_train.join(df_sk_train_label)
+test_sk = df_scaled_sk_test.join(df_sk_test_label)
+
+#^^#######################################데이터 전처리구간 ###############################################
+
+#dataset을 만들어주는 함수
 
 def make_dataset(data, label, window_size=20):
     feature_list = []
@@ -118,8 +129,8 @@ def make_dataset(data, label, window_size=20):
 
 
 # #^^
-feature_cols = ['시가','고가','저가','거래량']
-label_cols = ['종가']
+feature_cols = ['종가','고가','저가','거래량']
+label_cols = ['시가']
 #2400개의 데이터 
 #split 돌리기 위해서 데이터 피쳐와 종가로 나눠주기 
 
@@ -129,6 +140,7 @@ train_label = train[label_cols]
 #test(200일 최신의것)
 test_feature = test[feature_cols]
 test_label = test[label_cols]
+
 #sk
 train_feature_sk = train_sk[feature_cols]
 train_label_sk = train_sk[label_cols]
@@ -136,7 +148,7 @@ train_label_sk = train_sk[label_cols]
 test_feature_sk = test_sk[feature_cols]
 test_label_sk = test_sk[label_cols]
 
-#print(test_label_sk)
+# print(test_label_sk)
 
 
 
@@ -208,7 +220,7 @@ date_time = date.strftime("%m%d_%H%M")
 filepath = 'D:\Study\Samsung\_save\ModelCheckPoint'
 filename = '.{epoch:04d}-{val_loss:.4f}.hdf5'
 #filename = epoch값과 loss값이 파일명에 나올것이다 
-modelpath = "".join([filepath, "samsung_", date_time, "_", filename])
+modelpath = "".join([filepath, "samsung_siga", date_time, "_", filename])
 
 #체크포인트가 갱신될때마다 파일이 생성이 된다 
 #실질적으로 맨 마지막이 가장 높다
@@ -221,10 +233,10 @@ mcp = ModelCheckpoint(monitor = 'val_loss', mode='auto', batch_size = 10,verbose
 
 
 model.fit([x_sam_train,x_sk_train], [y_sam_train,y_sk_train]
-, epochs=100, batch_size=10, verbose=1 ,validation_split=0.15 ,callbacks=[es,mcp,tensorboard_callback])
+, epochs=100, batch_size=28, verbose=1 ,validation_split=0.15 ,callbacks=[es,mcp,tensorboard_callback])
 
 
-model.save('./_save/ModelCheckPoint/samsung_model_.h5')
+model.save('./_save/ModelCheckPoint/samsung_siga_model_.h5')
 
 #평가
 loss = model.evaluate([x_sam_test, x_sk_test],y_sam_test)
