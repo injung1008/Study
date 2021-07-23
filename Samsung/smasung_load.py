@@ -236,7 +236,7 @@ from keras.layers import LSTM, Input
 #평가
 
 #model = load_model('D:\Study\Samsung\_save\ModelCheckPointsamsung_0723_0205_.0008-2222.2498.hdf5') #[[61591.805]
-model = load_model('D:\Study\Samsung\_save\ModelCheckPointsamsung_0723_0316_.0003-12990.1807.hdf5') # [[63855.05 ]
+model = load_model('D:\Study\Samsung\_save\ModelCheckPointsamsung_0723_1113_.0023-21283812.0000.hdf5') # [[63855.05 ]
 loss = model.evaluate([x_sam_test, x_sk_test],y_sam_test)
 
 print('loss : ', loss )
