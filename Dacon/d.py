@@ -74,7 +74,7 @@ from tensorflow.keras.layers import Dense, LSTM, Embedding, Dropout
 model = Sequential()
 model.add(Embedding(input_dim=76529, output_dim=35, input_length=13))
 model.add(LSTM(152))
-model.add(Dropout(0.5))
+model.add(Dropout(0.9))
 # model.add(Dense(36, activation='relu'))
 # model.add(Dense(16))
 model.add(Dense(7, activation='softmax'))
