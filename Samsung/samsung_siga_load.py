@@ -184,7 +184,7 @@ from tensorflow.keras.layers import Dense, LSTM, Conv1D, Flatten
 #!model = load_model('D:\Study\Samsung\_save\ModelCheckPointsamsung_siga0723_1426_.0099-11302288.0000.hdf5') # [80701.25 ]]
 #model = load_model('D:\Study\Samsung\_save\ModelCheckPointsamsung_siga0723_1426_.0100-12986655.0000.hdf5') # [77615.75 ]]
 #^^ model = load_model('D:\Study\Samsung\_save\ModelCheckPointsamsung_siga0723_1426_.0098-11917253.0000.hdf5') # [82864.95 ]]
-model = load_model('D:\Study\Samsung\_save\ModelCheckPointsamsung_siga0723_1426_.0086-11593410.0000.hdf5')
+model = load_model('')
 loss = model.evaluate([x_sam_test, x_sk_test],y_sam_test)
 
 print('loss : ', loss )

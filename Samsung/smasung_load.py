@@ -250,10 +250,113 @@ from tensorflow.keras.layers import Dense, LSTM, Conv1D, Flatten
 ################################################################################################3
 #평가
 
-#model = load_model('D:\Study\Samsung\_save\ModelCheckPointsamsung_0723_0205_.0008-2222.2498.hdf5') #[[61591.805]
-#!model = load_model('D:\Study\Samsung\_save\ModelCheckPointsamsung_0723_1152_.0100-12545322.0000.hdf5') #  [ 82269.05 ]] - 시가
 
-model = load_model('D:\Study\Samsung\_save\ModelCheckPointsamsung_siga0723_1159_.0083-11962648.0000.hdf5')
+model = load_model('D:\Study\Samsung\_save\ModelCheckPointsamsung_0723_1152_.0100-12545322.0000.hdf5') #  [ 82269.05 ]] - 시가
+
+
+
+
+loss = model.evaluate([x_sam_test, x_sk_test],y_sam_test)
+
+print('loss : ', loss )
+
+result = model.predict([x_sam_test,x_sk_test])
+print('삼성 : ', result)
+
+#tensorboard --logdir=./logs/fit/
+
+
+# #2-1 모델1 구성 
+# input1 = Input(shape=(x_sam_train.shape[1], x_sam_train.shape[2]))
+# dense1 = LSTM(units=100, activation='relu',return_sequences=False)(input1)
+# dense2 = Dense(80)(dense1)
+# dense3 = Dense(40)(dense2)
+# output1 = Dense(10)(dense3)
+
+# #2-2 모델2 구성 
+# input2 = Input(shape=(x_sk_train.shape[1], x_sk_train.shape[2]))
+# dense11 = LSTM(units=100, activation='relu',return_sequences=False)(input2)
+# dense12 = Dense(80, activation='relu')(dense11)
+# dense13 = Dense(40, activation='relu')(dense12)
+# dense14 = Dense(20, activation='relu')(dense13)
+# output2 = Dense(1)(dense14)
+
+# from tensorflow.keras.layers import concatenate, Concatenate
+# merge1 = concatenate([output1, output2])
+# merge2 = Dense(2)(merge1)
+# merge3 = Dense(4, activation='relu')(merge2)
+
+# last_output = Dense(1)(merge2)
+
+
+# #concatenate, Concatenate 소문자와 대문자의 차이는 소문자 = 메소드, 대문자- 클래스
+# model = Model(inputs=[input1,input2] , outputs=last_output)
+
+
+#model.summary()
+# model.compile(loss='mae', optimizer='adam')
+
+# from keras.callbacks import EarlyStopping, ModelCheckpoint
+# es = EarlyStopping(monitor='val_loss', patience=20, mode='auto', verbose=1,
+#                     restore_best_weights=True)
+
+# ##############################################################################                    
+# import datetime
+# date = datetime.datetime.now()
+# date_time = date.strftime("%m%d_%H%M")
+
+# filepath = 'D:\Study\Samsung\_save\ModelCheckPoint'
+# filename = '.{epoch:04d}-{val_loss:.4f}.hdf5'
+# #filename = epoch값과 loss값이 파일명에 나올것이다 
+# modelpath = "".join([filepath, "samsung_", date_time, "_", filename])
+
+# #체크포인트가 갱신될때마다 파일이 생성이 된다 
+# #실질적으로 맨 마지막이 가장 높다
+# ################################################################################3
+
+# mcp = ModelCheckpoint(monitor = 'val_loss', mode='auto', batch_size = 8,verbose=1,
+#                         filepath = modelpath)    
+
+
+
+
+# model.fit([x_sam_train,x_sk_train], [y_sam_train,y_sk_train]
+# , epochs=100, batch_size=30, verbose=1 ,validation_split=0.2 ,callbacks=[es,mcp])
+
+
+# model.save('./_save/ModelCheckPoint/samsung_model_.h5')
+
+
+#model = load_model('./_save/ModelCheckPoint/keras47_model_save.h5')
+#! model = load_model('D:\Study\Samsung\_save\ModelCheckPointsamsung_0723_0103_.0010-14803.1299.hdf5') # [[68839.664]
+# #2-1 모델1 구성 
+# input1 = Input(shape=(x_sam_train.shape[1], x_sam_train.shape[2]))
+# dense1 = LSTM(units=100, activation='relu',return_sequences=False)(input1)
+# dense2 = Dense(80)(dense1)
+# dense3 = Dense(40)(dense2)
+# output1 = Dense(10)(dense3)
+
+# #2-2 모델2 구성 
+# input2 = Input(shape=(x_sk_train.shape[1], x_sk_train.shape[2]))
+# dense11 = LSTM(units=100, activation='relu',return_sequences=False)(input2)
+# dense12 = Dense(80, activation='relu')(dense11)
+# dense13 = Dense(40, activation='relu')(dense12)
+# dense14 = Dense(20, activation='relu')(dense13)
+# output2 = Dense(1)(dense14)
+
+# from tensorflow.keras.layers import concatenate, Concatenate
+# merge1 = concatenate([output1, output2])
+# merge2 = Dense(2)(merge1)
+# merge3 = Dense(4, activation='relu')(merge2)
+
+# last_output = Dense(1)(merge2)
+################################################################################################3
+#평가
+
+#model = load_model('D:\Study\Samsung\_save\ModelCheckPointsamsung_0723_0205_.0008-2222.2498.hdf5') #[[61591.805]
+model = load_model('D:\Study\Samsung\_save\ModelCheckPointsamsung_0723_1152_.0100-12545322.0000.hdf5') #  [ 82269.05 ]] - 시가
+
+#!model = load_model('D:\Study\Samsung\_save\ModelCheckPointsamsung_siga0723_1159_.0083-11962648.0000.hdf5') # [77052.05 ]]
 
 
 
