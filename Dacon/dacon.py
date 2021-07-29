@@ -55,17 +55,17 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 x_train = pad_sequences(x_train, maxlen=13, padding='pre')
 x_test = pad_sequences(x_test, maxlen=13, padding='pre')
 test_test = pad_sequences(test_test, maxlen=13, padding='pre')
-#print(test_test)
-# print(x_train.shape, x_test.shape) #(36523, 13) (9131, 13)
-# print(x_train[0])
-# print(type(x_train), type(x_train[0])) #<class 'numpy.ndarray'> <class 'numpy.ndarray'>
+print(test_test)
+print(x_train.shape, x_test.shape) #(36523, 13) (9131, 13)
+print(x_train[0])
+print(type(x_train), type(x_train[0])) #<class 'numpy.ndarray'> <class 'numpy.ndarray'>
 
 
-from tensorflow.keras.utils import to_categorical
-# print(np.unique(y_train)) #총 7개
+# from tensorflow.keras.utils import to_categorical
+# # print(np.unique(y_train)) #총 7개
 
-y_train = to_categorical(y_train)
-y_test = to_categorical(y_test)
+# y_train = to_categorical(y_train)
+# y_test = to_categorical(y_test)
 
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, LSTM, Embedding, Dropout
@@ -82,7 +82,7 @@ model.summary()
 
 #3. 컴파일, 훈련 
 
-model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['acc'])
+model.compile(loss='sparse_categorical_crossentropy', optimizer='adam', metrics=['acc'])
 
 from keras.callbacks import EarlyStopping
 es = EarlyStopping(monitor='val_loss', patience=10, mode='auto', verbose=1,
