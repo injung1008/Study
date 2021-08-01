@@ -28,21 +28,31 @@ x = train["cleaned_title"].tolist()
 test_test =test["cleaned_title"].tolist()
 y = np.array(train.topic_idx)
 
+from sklearn.model_selection import train_test_split
+
+x, x_val, y, y_val = train_test_split(x, y, 
+        train_size = 0.8, shuffle=True, random_state=9)
+
+
+
 #print(type(y)) #<class 'numpy.ndarray'>
 # print(len(x))
 # print("최대길이 : ", max(list(map(len, x)))) 
 # print(x)
 #print(test_test)
 
-tfidf = TfidfVectorizer(analyzer='word', sublinear_tf=True, ngram_range=(1, 2), max_features=85000, binary=False)
+tfidf = TfidfVectorizer(analyzer='char', sublinear_tf=True, ngram_range=(1, 2), max_features=45000, binary=False)
 
 tfidf.fit(x)
 
-#print(sorted(tfidf.vocabulary_.items()))
+# print(sorted(tfidf.vocabulary_.items()))
 
 x = tfidf.transform(x).astype('float32')
+x_val = tfidf.transform(x_val).astype('float32')
 test_test  = tfidf.transform(test_test).astype('float32')
-print(x[0])
+#print(x[0])
+
+
 
 
 from tensorflow.keras.models import Sequential
@@ -55,9 +65,9 @@ model = Sequential()
 # model.add(Embedding(input_dim=76500, output_dim=35, input_length=13))
 # model.add(LSTM(152))
 # model.add(Dropout(0.5))
-model.add(Dense(1008, input_dim=85000, activation='relu'))
+model.add(Dense(200, input_dim=45000, activation='relu'))
 model.add(Dropout(0.8))
-model.add(Dense(20, activation='relu'))
+#model.add(Dense(20, activation='relu'))
 model.add(Dense(7, activation='softmax'))
 model.summary()
 
@@ -69,11 +79,27 @@ model.compile(loss='sparse_categorical_crossentropy', optimizer='adam', metrics=
 # es = EarlyStopping(monitor='val_loss', patience=10, mode='auto', verbose=1,
 #                     restore_best_weights=True)
 
-model.fit(x, y, epochs=8,batch_size=50)
+hist = model.fit(x, y, epochs=10,batch_size=30, validation_data=(x_val,y_val))
 
 #평가 예측 
-acc = model.evaluate(x, y)
-print("acc : ", acc)
+p_acc = model.evaluate(x, y)
+print("p_acc : ", p_acc)
+
+acc = hist.history['acc']
+val_acc = hist.history['val_acc']
+loss = hist.history['loss']
+val_loss = hist.history['val_loss']
+
+print('loss : ', loss )
+print('val loss : ', val_loss)
+
+
+#print('acc 전체 : ', acc)
+
+print('acc : ', acc[-1])
+print('val acc : ', val_acc[-1])
+
+
 
 temp = model.predict(test_test)
 
@@ -86,4 +112,4 @@ temp.rename(columns={0:'topic_idx'}, inplace=True)
 temp['index'] = np.array(range(45654,45654+9131))
 temp = temp.set_index('index')
 print(temp)
-temp.to_csv('D:\Study\Dacon\_save\submission3.csv')
+temp.to_csv('D:\Study\Dacon\_save\submission5.csv')
