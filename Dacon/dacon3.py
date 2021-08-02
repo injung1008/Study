@@ -30,18 +30,18 @@ test = test.fillna('a')
 # train["cleaned_title"] = train["title"].apply(lambda x : clean_text(x))
 # test["cleaned_title"]  = test["title"].apply(lambda x : clean_text(x))
 
-x = train['0'].tolist()
-test_test =test["0"].tolist()
-y = np.array(train_y.topic_idx)
+# x = train['0'].tolist()
+# test_test =test["0"].tolist()
+# y = np.array(train_y.topic_idx)
 
-from sklearn.model_selection import train_test_split
+# from sklearn.model_selection import train_test_split
 
-x, x_val, y, y_val = train_test_split(x, y, 
-        train_size = 0.8, shuffle=True, random_state=9)
+# x, x_val, y, y_val = train_test_split(x, y, 
+#         train_size = 0.8, shuffle=True, random_state=9)
 
 
 
-print(type(y)) #<class 'numpy.ndarray'>
+#print(type(y)) #<class 'numpy.ndarray'>
 # print(len(x))
 # print("최대길이 : ", max(list(map(len, x)))) 
 # print(x)

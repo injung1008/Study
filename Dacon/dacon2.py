@@ -31,7 +31,7 @@ y = np.array(train.topic_idx)
 from sklearn.model_selection import train_test_split
 
 x, x_val, y, y_val = train_test_split(x, y, 
-        train_size = 0.8, shuffle=True, random_state=9)
+        train_size = 0.9, shuffle=True, random_state=9)
 
 
 
@@ -41,7 +41,7 @@ x, x_val, y, y_val = train_test_split(x, y,
 # print(x)
 #print(test_test)
 
-tfidf = TfidfVectorizer(analyzer='char', sublinear_tf=True, ngram_range=(1, 2), max_features=45000, binary=False)
+tfidf = TfidfVectorizer(analyzer='char_wb', sublinear_tf=True, ngram_range=(1, 2), max_features=45000, binary=False)
 
 tfidf.fit(x)
 
@@ -65,9 +65,10 @@ model = Sequential()
 # model.add(Embedding(input_dim=76500, output_dim=35, input_length=13))
 # model.add(LSTM(152))
 # model.add(Dropout(0.5))
-model.add(Dense(200, input_dim=45000, activation='relu'))
+model.add(Dense(120, input_dim=45000, activation='relu'))
 model.add(Dropout(0.8))
-#model.add(Dense(20, activation='relu'))
+model.add(Dense(64, activation='relu'))
+# model.add(Dense(32, activation='relu'))
 model.add(Dense(7, activation='softmax'))
 model.summary()
 
@@ -79,7 +80,7 @@ model.compile(loss='sparse_categorical_crossentropy', optimizer='adam', metrics=
 # es = EarlyStopping(monitor='val_loss', patience=10, mode='auto', verbose=1,
 #                     restore_best_weights=True)
 
-hist = model.fit(x, y, epochs=10,batch_size=30, validation_data=(x_val,y_val))
+hist = model.fit(x, y, epochs=20,batch_size=20, validation_data=(x_val,y_val))
 
 #평가 예측 
 p_acc = model.evaluate(x, y)
