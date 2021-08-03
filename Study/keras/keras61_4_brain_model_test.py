@@ -42,85 +42,85 @@ for i in range(10):
 plt.show()
 
 
-model = Sequential()
+# model = Sequential()
 
-model.add(Conv2D(32,kernel_size=3,activation= 'relu', input_shape = (150,150,3) ))
-model.add(BatchNormalization())
-model.add(Conv2D(32,kernel_size=3,activation='relu'))
-model.add(BatchNormalization())
-model.add(Conv2D(32,kernel_size=5,activation = 'relu', padding='same',strides=2))
-model.add(BatchNormalization())
-model.add(Dropout(0.4))
+# model.add(Conv2D(32,kernel_size=3,activation= 'relu', input_shape = (150,150,3) ))
+# model.add(BatchNormalization())
+# model.add(Conv2D(32,kernel_size=3,activation='relu'))
+# model.add(BatchNormalization())
+# model.add(Conv2D(32,kernel_size=5,activation = 'relu', padding='same',strides=2))
+# model.add(BatchNormalization())
+# model.add(Dropout(0.4))
 
-model.add(Conv2D(64,kernel_size=3,activation= 'relu'))
-model.add(BatchNormalization())
-model.add(Conv2D(64,kernel_size=3,activation='relu'))
-model.add(BatchNormalization())
-model.add(Conv2D(64,kernel_size=5,activation = 'relu', padding='same',strides=2))
-model.add(BatchNormalization())
-model.add(Dropout(0.4))
+# model.add(Conv2D(64,kernel_size=3,activation= 'relu'))
+# model.add(BatchNormalization())
+# model.add(Conv2D(64,kernel_size=3,activation='relu'))
+# model.add(BatchNormalization())
+# model.add(Conv2D(64,kernel_size=5,activation = 'relu', padding='same',strides=2))
+# model.add(BatchNormalization())
+# model.add(Dropout(0.4))
 
-model.add(Conv2D(12,kernel_size=4,activation= 'relu'))
-model.add(BatchNormalization())
-model.add(Flatten())
-model.add(Dropout(0.8))
-model.add(Dense(1,activation='sigmoid'))
-model.summary()
+# model.add(Conv2D(12,kernel_size=4,activation= 'relu'))
+# model.add(BatchNormalization())
+# model.add(Flatten())
+# model.add(Dropout(0.8))
+# model.add(Dense(1,activation='sigmoid'))
+# model.summary()
 
-model.compile(optimizer='adam', loss = "binary_crossentropy", metrics=['acc'])
+# model.compile(optimizer='adam', loss = "binary_crossentropy", metrics=['acc'])
 
-# 콜벡은 이렇게 선언해서 callbacks에 담아놓자
-earlyStopping = EarlyStopping(patience=10, verbose=0)
-reduce_lr_loss = ReduceLROnPlateau(factor=0.1, patience=5, min_lr=0.000001, verbose=0)
-tqdm = TqdmCallback(verbose=0) #진행율 표시해준다.(없으면 답답하다)
-callbacks = [earlyStopping, reduce_lr_loss, tqdm]
+# # 콜벡은 이렇게 선언해서 callbacks에 담아놓자
+# earlyStopping = EarlyStopping(patience=10, verbose=0)
+# reduce_lr_loss = ReduceLROnPlateau(factor=0.1, patience=5, min_lr=0.000001, verbose=0)
+# tqdm = TqdmCallback(verbose=0) #진행율 표시해준다.(없으면 답답하다)
+# callbacks = [earlyStopping, reduce_lr_loss, tqdm]
 
-hist = model.fit(x_train,y_train,
-                              epochs = 10,
-                              steps_per_epoch = 30,
-                              validation_split=0.2,
-                              callbacks=callbacks,
-                              verbose=0)
-
-
-print('train_acc:{0:.5f} , val_acc:{1:.5f}'.format(max(hist.history['acc']),max(hist.history['val_acc'])))
+# hist = model.fit(x_train,y_train,
+#                               epochs = 10,
+#                               steps_per_epoch = 30,
+#                               validation_split=0.2,
+#                               callbacks=callbacks,
+#                               verbose=0)
 
 
-acc = hist.history['acc']
-val_acc = hist.history['val_acc']
-loss = hist.history['loss']
-val_loss = hist.history['val_loss']
+# print('train_acc:{0:.5f} , val_acc:{1:.5f}'.format(max(hist.history['acc']),max(hist.history['val_acc'])))
 
 
-e_loss = model.evaluate(x_test, y_test)
-print('e_loss : ', e_loss )
-
-#print('acc 전체 : ', acc)
-
-print('acc : ', acc[-1])
-print('loss : ', loss)
-print('val acc : ', val_acc)
-print('val loss : ', val_loss)
-
-import tensorflow as tf
+# acc = hist.history['acc']
+# val_acc = hist.history['val_acc']
+# loss = hist.history['loss']
+# val_loss = hist.history['val_loss']
 
 
-temp = model.predict(x_test)
-print('원본 : ', temp)
-temp = tf.argmax(temp, axis=1)
-# temp = pd.DataFrame(temp)
-# print('예측값 : ', temp)
-print('원래값 : ',y_test[:5])
+# e_loss = model.evaluate(x_test, y_test)
+# print('e_loss : ', e_loss )
+
+# #print('acc 전체 : ', acc)
+
+# print('acc : ', acc[-1])
+# print('loss : ', loss)
+# print('val acc : ', val_acc)
+# print('val loss : ', val_loss)
+
+# import tensorflow as tf
 
 
+# temp = model.predict(x_test)
+# print('원본 : ', temp)
+# temp = tf.argmax(temp, axis=1)
+# # temp = pd.DataFrame(temp)
+# # print('예측값 : ', temp)
+# print('원래값 : ',y_test[:5])
 
 
 
 
-plt.plot(hist.history['acc'])
-plt.plot(hist.history['val_acc'])
-plt.title('Accuracy', fontsize=14)
-plt.xlabel('Epoch', fontsize=14)
-plt.ylabel('Accuracy',fontsize=14)
-plt.legend(['Train', 'Test'], loc='upper left')
-plt.show()
+
+
+# plt.plot(hist.history['acc'])
+# plt.plot(hist.history['val_acc'])
+# plt.title('Accuracy', fontsize=14)
+# plt.xlabel('Epoch', fontsize=14)
+# plt.ylabel('Accuracy',fontsize=14)
+# plt.legend(['Train', 'Test'], loc='upper left')
+# plt.show()

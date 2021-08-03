@@ -1,39 +1,96 @@
 import numpy as np
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Conv2D, Flatten, Dropout
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
+train_datagen = ImageDataGenerator(
+    rescale=1./255,
+    horizontal_flip=False,   # 수평
+    vertical_flip=False,
+    zoom_range=0.2,
+    fill_mode='nearest'     # 공백을 비슷한 이미지로 채우겠다
+)
 
-x_train = np.load('D:\Study\_npy\k59_3_train_x.npy')
-y_train = np.load('D:\Study\_npy\k59_3_train_y.npy')
+xy_train = train_datagen.flow_from_directory(
+    'D:\Study\_data\\brain\\train',
+    target_size=(150, 150), # 커지면 메모리가 터진다.
+    batch_size=160,
+    class_mode='binary',# train 폴더 안에 ad(이상스캔), normal(정상스캔)폴더 아래에 이미지가 들어있는데, 
+    shuffle=True        # 이렇게 폴더 구조로 구분했을 경우 이게 라벨이 된다. 
+)
+# 실행하면 다음과 같은 메시지가 나온다. Found 160 images belonging to 2 classes. = 160장의 이미지를 찾았다.
 
-x_test = np.load('D:\Study\_npy\k59_3_test_x.npy')
-y_test = np.load('D:\Study\_npy\k59_3_test_y.npy')
+xy_test = train_datagen.flow_from_directory(
+    'D:\Study\_data\\brain\\test',
+    target_size=(150, 150), # 커지면 메모리가 터진다.
+    batch_size=120,
+    class_mode='binary' # train 폴더 안에 ad(이상스캔), normal(정상스캔)폴더 아래에 이미지가 들어있는데, 
+                        # 이렇게 폴더 구조로 구분했을 경우 이게 라벨이 된다. 
+)
 
-# print(y_train.shape) #(160,)
-# print(x_train.shape) #(160, 150, 150, 3)
+x_train = xy_train[0][0]
+y_train = xy_train[0][1]
+x_test = xy_test[0][0]
+y_test = xy_test[0][1]
 
-augment_size = 32 #배치사이즈
+argument_size = int(160*0.2)
+print(x_train.shape)
+randidx = np.random.randint(x_train.shape[0], size=argument_size)
 
-randidx = np.random.randint(x_train.shape[0], size=augment_size)
+x_argumented = x_train[randidx].copy()
+y_argumented = y_train[randidx].copy()
 
+x_argumented = x_argumented.reshape(x_argumented.shape[0], 150, 150, 3)
+x_train = x_train.reshape(x_train.shape[0], 150, 150, 3)
+x_test = x_test.reshape(x_test.shape[0], 150, 150, 3)
 
-# print(randidx) #[ 51   6   5  48 113 124  78  72  49  71   7  91 159  84   8  69  62  60
-# #  99 125 133  93  62 139 155 133 155  29  20 140 129  18]랜덤하게 들어감 
-# print(randidx.shape) #(32,)배치 사이즈만큼 랜덤하게 들어감 
+x_argumented = train_datagen.flow(x_argumented, np.zeros(argument_size),
+                                batch_size=argument_size, shuffle=False,
+                                 save_to_dir='D:\Study\\temp'
+                                ).next()[0]
 
+import matplotlib.pyplot as plt
+# 증폭데이터 시각화 
+plt.figure(figsize=(2,2))
+for i in range(10):
+    plt.subplot(2, 10, i+1)
+    plt.axis('off')
+    plt.title('a')
+    plt.imshow(x_train[i], cmap='gray')
 
-x_augmented = x_train[randidx].copy() #메모리가 공유되는걸 방지하기 위해 카피해서 진행.. 
-y_augmented = y_train[randidx].copy()
-#print(x_augmented.shape) #(32, 150, 150, 3)
+    plt.subplot(2, 10, i+11)
+    plt.axis('off')
+    plt.title('b')
 
-x_augmented = x_augmented.reshape(x_augmented.shape[0],150,150,3)  #4차원으로 만들어주기 
-# #이터러블 넘파이가 4차원을 받기때문에 쉐이프를 바꿔줘야함 
-x_train = x_train.reshape(x_train.shape[0], 150,150,3)
-x_test = x_test.reshape(x_test.shape[0], 150,150,3)
+    plt.imshow(x_argumented[i], cmap='gray')
 
-x_augmented = train_datagen.flow(x_augmented, np.zeros(augment_size),
-                                 batch_size=augment_size, shuffle=False).next()[0]
+plt.show()
 
-x_train = np.concatenate((x_train, x_augmented))
-y_train = np.concatenate((y_train, y_augmented))
-print(x_train.shape) #(10000, 28, 28, 3)
+# x_train = np.concatenate((x_argumented, x_train))
+# y_train = np.concatenate((y_argumented, y_train))
 
+# print('x_train shape',x_train.shape)
+
+# model = Sequential()
+# model.add(Conv2D(32, (2, 2), input_shape=(150, 150, 3), activation='relu')) # 흑백 데이터지만 자동으로 컬러로 인식한다.
+# model.add(Dropout(0.8))
+# model.add(Conv2D(16, (2, 2), activation='relu')) # 흑백 데이터지만 자동으로 컬러로 인식한다.
+# model.add(Flatten())
+# model.add(Dropout(0.6))
+# model.add(Dense(1, activation='sigmoid'))
+
+# # 3. 컴파일, 훈련
+# model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['acc'])
+
+# # model.fit(인수 두 개를 받아야 하기 때문에 지금은 x데이터, y데이터가 묶여져 있어서 fit을 사용할 순 없음.)
+# # hist = model.fit_generator(xy_train, epochs=50, steps_per_epoch=32,
+# #                             validation_data=xy_test,
+# #                             validation_steps=4
+# #                             )
+# hist = model.fit(x_train, y_train, epochs=90, steps_per_epoch=32,
+#                 validation_split=0.1, batch_size=5, validation_steps=4)
+
+# result = model.evaluate(x_test, y_test)
+# print('loss : ', result[0])
+# print('acc : ', result[1])
