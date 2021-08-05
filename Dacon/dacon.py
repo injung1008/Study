@@ -49,60 +49,60 @@ test_test = token.texts_to_sequences(test_test)
 
 #print("뉴스 기사의 최대길이 : ", max(list(map(len, x_train)))) #13
 
-# from tensorflow.keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras.preprocessing.sequence import pad_sequences
 
 
-# x_train = pad_sequences(x_train, maxlen=13, padding='pre')
-# x_test = pad_sequences(x_test, maxlen=13, padding='pre')
-# test_test = pad_sequences(test_test, maxlen=13, padding='pre')
-# print(test_test)
-# print(x_train.shape, x_test.shape) #(36523, 13) (9131, 13)
-# print(x_train[0])
-# print(type(x_train), type(x_train[0])) #<class 'numpy.ndarray'> <class 'numpy.ndarray'>
+x_train = pad_sequences(x_train, maxlen=13, padding='pre')
+x_test = pad_sequences(x_test, maxlen=13, padding='pre')
+test_test = pad_sequences(test_test, maxlen=13, padding='pre')
+print(test_test)
+print(x_train.shape, x_test.shape) #(36523, 13) (9131, 13)
+print(x_train[0])
+print(type(x_train), type(x_train[0])) #<class 'numpy.ndarray'> <class 'numpy.ndarray'>
 
 
-# # from tensorflow.keras.utils import to_categorical
-# # # print(np.unique(y_train)) #총 7개
+# from tensorflow.keras.utils import to_categorical
+# # print(np.unique(y_train)) #총 7개
 
-# # y_train = to_categorical(y_train)
-# # y_test = to_categorical(y_test)
+# y_train = to_categorical(y_train)
+# y_test = to_categorical(y_test)
 
-# from tensorflow.keras.models import Sequential
-# from tensorflow.keras.layers import Dense, LSTM, Embedding, Dropout
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, LSTM, Embedding, Dropout
 
 
-# model = Sequential()
-# model.add(Embedding(input_dim=76529, output_dim=35, input_length=13))
-# model.add(LSTM(152))
-# model.add(Dropout(0.5))
-# # model.add(Dense(36, activation='relu'))
-# # model.add(Dense(16))
-# model.add(Dense(7, activation='softmax'))
-# model.summary()
+model = Sequential()
+model.add(Embedding(input_dim=76529, output_dim=35, input_length=13))
+model.add(LSTM(152))
+model.add(Dropout(0.5))
+# model.add(Dense(36, activation='relu'))
+# model.add(Dense(16))
+model.add(Dense(7, activation='softmax'))
+model.summary()
 
-# #3. 컴파일, 훈련 
+#3. 컴파일, 훈련 
 
-# model.compile(loss='sparse_categorical_crossentropy', optimizer='adam', metrics=['acc'])
+model.compile(loss='sparse_categorical_crossentropy', optimizer='adam', metrics=['acc'])
 
-# from keras.callbacks import EarlyStopping
-# es = EarlyStopping(monitor='val_loss', patience=10, mode='auto', verbose=1,
-#                     restore_best_weights=True)
+from keras.callbacks import EarlyStopping
+es = EarlyStopping(monitor='val_loss', patience=10, mode='auto', verbose=1,
+                    restore_best_weights=True)
 
-# model.fit(x_train, y_train, epochs=80, batch_size=100,  validation_split=0.02, callbacks=[es])
+model.fit(x_train, y_train, epochs=80, batch_size=100,  validation_split=0.02, callbacks=[es])
 
-# #평가 예측 
-# acc = model.evaluate(x_test, y_test)[1]
-# print("acc : ", acc)
+#평가 예측 
+acc = model.evaluate(x_test, y_test)[1]
+print("acc : ", acc)
 
-# temp = model.predict(test_test)
+temp = model.predict(test_test)
 
-# temp = tf.argmax(temp, axis=1)
+temp = tf.argmax(temp, axis=1)
 
-# temp = pd.DataFrame(temp)
+temp = pd.DataFrame(temp)
 
-# temp.rename(columns={0:'topic_idx'}, inplace=True)
+temp.rename(columns={0:'topic_idx'}, inplace=True)
 
-# temp['index'] = np.array(range(45654,45654+9131))
-# temp = temp.set_index('index')
-# print(temp)
-# temp.to_csv('D:\Study\Dacon\_save\submission.csv')
+temp['index'] = np.array(range(45654,45654+9131))
+temp = temp.set_index('index')
+print(temp)
+temp.to_csv('D:\Study\Dacon\_save\submission.csv')
