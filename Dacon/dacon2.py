@@ -31,7 +31,7 @@ y = np.array(train.topic_idx)
 from sklearn.model_selection import train_test_split
 
 x, x_val, y, y_val = train_test_split(x, y, 
-        train_size = 0.9, shuffle=True, random_state=9)
+        train_size = 0.9, shuffle=True, random_state=2)
 
 
 
@@ -41,7 +41,7 @@ x, x_val, y, y_val = train_test_split(x, y,
 # print(x)
 #print(test_test)
 
-tfidf = TfidfVectorizer(analyzer='char_wb', sublinear_tf=True, ngram_range=(1, 2), max_features=45000, binary=False)
+tfidf = TfidfVectorizer(analyzer='char_wb', sublinear_tf=True, ngram_range=(2, 6), max_features=45000, binary=False)
 
 tfidf.fit(x)
 
@@ -52,6 +52,10 @@ x_val = tfidf.transform(x_val).astype('float32')
 test_test  = tfidf.transform(test_test).astype('float32')
 #print(x[0])
 
+from sklearn.linear_model import LogisticRegression
+
+lgs = LogisticRegression(class_weight='balanced')
+lgs.fit(x,y)
 
 
 
@@ -67,20 +71,53 @@ model = Sequential()
 # model.add(Dropout(0.5))
 model.add(Dense(120, input_dim=45000, activation='relu'))
 model.add(Dropout(0.8))
-model.add(Dense(64, activation='relu'))
+# model.add(Dense(128, activation='relu'))
 # model.add(Dense(32, activation='relu'))
+# model.add(Dense(14, activation='relu'))
 model.add(Dense(7, activation='softmax'))
 model.summary()
 
 # #3. 컴파일, 훈련 
 
-model.compile(loss='sparse_categorical_crossentropy', optimizer='adam', metrics=['acc'])
+from tensorflow.keras.optimizers import Adam
+optimizer = Adam(lr=0.001)
+model.compile(loss='sparse_categorical_crossentropy',optimizer=optimizer,
+                    metrics=['acc'])
+#지정하는건 컴파일이지만 실행하는건 fit이다 ->  일정한 값이 적용되지 않으면 러닝레이트를 줄이는것은 callbacks
 
-# from keras.callbacks import EarlyStopping
-# es = EarlyStopping(monitor='val_loss', patience=10, mode='auto', verbose=1,
-#                     restore_best_weights=True)
+from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
+from tensorflow.keras.callbacks import ModelCheckpoint
 
-hist = model.fit(x, y, epochs=20,batch_size=20, validation_data=(x_val,y_val))
+##############################################################################                    
+import datetime
+date = datetime.datetime.now()
+date_time = date.strftime("%m%d_%H%M")
+
+filepath = './_save/ModelCheckPoint'
+filename = '.{epoch:04d}-{val_loss:.4f}.hdf5'
+#filename = epoch값과 loss값이 파일명에 나올것이다 
+modelpath = "".join([filepath, "dacon_", date_time, "_", filename])
+
+#체크포인트가 갱신될때마다 파일이 생성이 된다 
+#실질적으로 맨 마지막이 가장 높다
+################################################################################3
+
+cp = ModelCheckpoint(monitor = 'val_loss', mode='auto', batch_size = 8,verbose=1,
+                        filepath = modelpath)    
+
+# import time
+# start_time = time.time()
+es = EarlyStopping(monitor='val_acc', patience=2, mode='max', verbose=1)
+
+# reduce_lr = ReduceLROnPlateau(monitor='val_loss', patience=8, mode='auto', verbose=1, factor=0.05)
+# #es는 조건이맞으면 끝나고, reduce_lr도 조건 맞으면 끝나지만, factor=0.5 로 해놓으면 감소가 없으면 러닝 레이트가 0.5 만큼 줄어든다.
+
+
+hist = model.fit(x, y, epochs=15, verbose=1,validation_data=(x_val,y_val),
+batch_size=512,callbacks=[cp])
+
+
+# end_time = time.time() - start_time
 
 #평가 예측 
 p_acc = model.evaluate(x, y)
@@ -91,14 +128,14 @@ val_acc = hist.history['val_acc']
 loss = hist.history['loss']
 val_loss = hist.history['val_loss']
 
-print('loss : ', loss )
-print('val loss : ', val_loss)
+print('loss : ', loss[-1])
+print('val loss : ', val_loss[-1])
 
 
 #print('acc 전체 : ', acc)
 
 print('acc : ', acc[-1])
-print('val acc : ', val_acc[-1])
+print('val acc : ', val_acc)
 
 
 
@@ -113,4 +150,4 @@ temp.rename(columns={0:'topic_idx'}, inplace=True)
 temp['index'] = np.array(range(45654,45654+9131))
 temp = temp.set_index('index')
 print(temp)
-temp.to_csv('D:\Study\Dacon\_save\submission5.csv')
+temp.to_csv('D:\Study\Dacon\_save\submission13.csv')
