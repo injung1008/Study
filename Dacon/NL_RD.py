@@ -73,8 +73,10 @@ forest=RandomForestClassifier(n_estimators=100)
 forest.fit(train_x, train_y)
 
 #모델 검증
-forest.score(eval_x, eval_y)
+sp = forest.score(eval_x, eval_y)
+print(sp)
+
 forest.predict(test_features)
 sample_submission['label']=forest.predict(test_features)
-sample_submission.to_csv('rf_baseline.csv', index=False)
+sample_submission.to_csv('_baseline.csv', index=False)
 
