@@ -10,6 +10,7 @@ import numpy as np
 from tensorflow.keras.datasets import mnist
 from sklearn.decomposition import PCA
 from sklearn.metrics import accuracy_score
+from xgboost.sklearn import XGBClassifier
 (x_train, y_train), (x_test, y_test) = mnist.load_data() 
 
 # print(x_train.shape, x_test.shape) #(60000, 28, 28) (10000, 28, 28)
@@ -77,16 +78,16 @@ kfold = KFold(n_splits=5, shuffle=True, random_state=66)
 #cross_val_score = 교차검증 방법으로 kfold와비슷 
 
 parameters = [
-    {'n_estimators' : [100,200,300], "learning_rate":[0.1,0.3,0.001,0.01],'max_depth' : [4, 5, 6]},
-    {'n_estimators' : [90,100,110,200], "learning_rate":[0.1,0.001,0.01],
-    'max_depth' : [4, 5, 6], 'colsample_bytree':[0.6,0.9,1]},
-    {'n_estimators' : [90,110], "learning_rate":[0.1,0.3,0.001,0.5],'max_depth' : [6, 8, 10, 12],
-    'colsample_bytree':[0.6,0.9,0.9]}
+    {'n_estimators' : [100,200,300], "learning_rate":[0.1,0.3,0.001,0.01],'max_depth' : [4, 5, 6]}
+    # ,{'n_estimators' : [90,100,110,200], "learning_rate":[0.1,0.001,0.01],
+    # 'max_depth' : [4, 5, 6], 'colsample_bytree':[0.6,0.9,1]},
+    # {'n_estimators' : [90,110], "learning_rate":[0.1,0.3,0.001,0.5],'max_depth' : [6, 8, 10, 12],
+    # 'colsample_bytree':[0.6,0.9,0.9]}
 ]
 n_jobs = -1
 
 #!2. model 구성 
-model = GridSearchCV(XGBRegressor(), parameters, cv=kfold)
+model = GridSearchCV(XGBClassifier(), parameters, cv=kfold)
 #파라미터와 cv를 곱한것만큼 돌아간다 SVC에는 여러가지 파라미터가 존재한다 
 #gridSearch에서는 fit을 지원한다 
 # model = SVC()

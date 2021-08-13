@@ -10,6 +10,7 @@ import numpy as np
 from tensorflow.keras.datasets import mnist
 from sklearn.decomposition import PCA
 from sklearn.metrics import accuracy_score
+from xgboost.sklearn import XGBClassifier
 (x_train, y_train), (x_test, y_test) = mnist.load_data() 
 
 # print(x_train.shape, x_test.shape) #(60000, 28, 28) (10000, 28, 28)
@@ -86,7 +87,7 @@ parameters = [
 n_jobs = -1
 
 #!2. model 구성 
-model = RandomizedSearchCV(XGBRegressor(), parameters, cv=kfold)
+model = RandomizedSearchCV(XGBClassifier(), parameters, cv=kfold)
 #파라미터와 cv를 곱한것만큼 돌아간다 SVC에는 여러가지 파라미터가 존재한다 
 #gridSearch에서는 fit을 지원한다 
 # model = SVC()

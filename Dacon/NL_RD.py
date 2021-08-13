@@ -68,15 +68,39 @@ train_x, eval_x, train_y, eval_y=train_test_split(train_features, train['label']
 #랜덤포레스트로 모델링
 from sklearn.ensemble import RandomForestClassifier
 
-forest=RandomForestClassifier(n_estimators=100)
 
-forest.fit(train_x, train_y)
+from sklearn.model_selection import train_test_split, KFold,  GridSearchCV
+
+kfold = KFold(n_splits=5, shuffle=True, random_state=66)
+
+parameters = [
+    {'n_estimators' : [100,200]},
+    {'learning_rate' : [0.1,0.001,0.5]},
+    {'max_depth' : [4,5,6]},
+    {'colsample_bytree' : [0.6,0.9,1]},
+    {'colsample_bylevel' : [0.6,0.7,0.9]},
+    # {'min_samples_leaf' : [3, 5, 7, 10]},
+    # {'min_samples_split' : [2, 3, 5, 10]},
+    {'n_jobs' : [-1, 2, 4]}
+]
+
+#!2. model 구성 
+model = GridSearchCV(RandomForestClassifier(), parameters, cv=kfold)
+
+model.fit(train_x, train_y)
 
 #모델 검증
-sp = forest.score(eval_x, eval_y)
-print(sp)
+result = model.score(eval_x, eval_y)
+print('result : ',result)
 
-forest.predict(test_features)
-sample_submission['label']=forest.predict(test_features)
+#4. 평가, 예측 
+print("최적의 매개변수 : ", model.best_estimator_) # -> train에 대한 평가값 
+#best_estimator_ 가장 좋은 평가가 무엇인가? 
+# 최적의 매개변수 :  SVC(C=1, kernel='linear')
+print("best_score_ : ", model.best_score_)
+
+model.predict(test_features)
+sample_submission['label']=model.predict(test_features)
 sample_submission.to_csv('_baseline.csv', index=False)
+
 
