@@ -70,13 +70,14 @@ from sklearn.ensemble import RandomForestClassifier
 
 
 from sklearn.model_selection import train_test_split, KFold,  GridSearchCV
+from xgboost import XGBRegressor, XGBClassifier
 
 kfold = KFold(n_splits=5, shuffle=True, random_state=66)
 
 parameters = [
-    {'n_estimators' : [100,200]},
-    {'learning_rate' : [0.1,0.001,0.05]},
-    {'max_depth' : [4,5,6]},
+    {'n_estimators' : [10,20],'n_jobs' : [-1, 2, 4],'learning_rate' : [0.1,0.001,0.05]},
+    {'learning_rate' : [0.1,0.001,0.05],'n_jobs' : [-1, 2, 4]},
+    {'max_depth' : [4,5,6],'n_jobs' : [-1, 2, 4]},
     # {'colsample_bytree' : [0.6,0.9,1]},
     # {'colsample_bylevel' : [0.6,0.7,0.9]},
     # {'min_samples_leaf' : [3, 5, 7, 10]},
@@ -85,7 +86,7 @@ parameters = [
 ]
 
 #!2. model 구성 
-model = GridSearchCV(RandomForestClassifier(), parameters, cv=kfold)
+model = GridSearchCV(XGBClassifier(), parameters, cv=kfold)
 
 model.fit(train_x, train_y)
 
