@@ -86,7 +86,7 @@ parameters = [
 ]
 
 #!2. model 구성 
-model = GridSearchCV(RandomForestClassifier(), parameters, cv=kfold)
+model = GridSearchCV(XGBClassifier(), parameters, cv=kfold)
 
 model.fit(train_x, train_y)
 
