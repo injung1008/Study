@@ -3,7 +3,6 @@ import numpy as np
 from numpy.core.fromnumeric import argmax
 from sklearn import datasets  
 from sklearn.datasets import load_diabetes 
-from sklearn.decomposition import PCA
 from sklearn.model_selection import train_test_split 
 
 
@@ -13,13 +12,15 @@ x = datasets.data
 y = datasets.target   
 print(x.shape, y.shape) #(442,10) (442,)
 
-pca = PCA(n_components=8) #총 10개 칼럼을 7개로 압축하겠다 
-x = pca.fit_transform(x)
+from sklearn.decomposition import PCA
 
+pca = PCA(n_components=10) #총 10개 칼럼을 7개로 압축하겠다 
+x = pca.fit_transform(x)
+print(x.shape)
 #주성분 분석이 어느정도 영향을 미치는지 알고 있다면 판단 하는게 쉬워짐 차원축소의 비율에 대해서 확인함 
 pca_EVR = pca.explained_variance_ratio_
-print(pca_EVR)
-print(sum(pca_EVR))
+# print(pca_EVR)
+# print(sum(pca_EVR))
 # [0.40242142 0.14923182 0.12059623 0.09554764 0.06621856 0.06027192 0.05365605]
 #중요한 순서대로 앞으로 밀어버린다 - 총합 0.9479436357350414  
 
@@ -31,12 +32,15 @@ print(sum(pca_EVR))
 
 #누적값 확인하고 싶을때 
 cumsum = np.cumsum(pca_EVR)
-print(cumsum)
+# print(cumsum)
 # [0.40242142 0.55165324 0.67224947 0.76779711 0.83401567 0.89428759
 #  0.94794364 0.99131196 0.99914395 1.        ]
 
+print(cumsum >= 0.94)
+# [False False False False False False  True  True  True  True]
 
 print(np.argmax(cumsum >= 0.94)+1)
+
 import matplotlib.pyplot as plt     
 plt.plot(cumsum)
 plt.grid() 
