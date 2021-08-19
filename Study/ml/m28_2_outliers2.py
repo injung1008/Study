@@ -2,7 +2,7 @@
 
 import numpy as np   
 aaa = np.array([[1,2,10000,3,4,6,7,8,90,100, 5000],
-            [1000,2000,3,4000,5000,6000,7000,8,9000,10000, 1000001]])
+            [1000,2000,3,4000,5000,6000,7000,8,9000,10000, 1001]])
 
 aaa = aaa.transpose()
 # print(aaa.shape)
@@ -25,7 +25,6 @@ def outliers(data_out):
         print(np.where((data_out[:,i-1:i]>upper_bound) | (data_out[:,i-1:i]<lower_bound)))
     # return np.where((data_out[:,i-1:i]>upper_bound) | (data_out[:,i-1:i]<lower_bound))
        
-
 
 
 # outliers_loc = outliers(aaa[:,:1])

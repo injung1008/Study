@@ -30,10 +30,11 @@ for i in list(y):
         newlist +=[1]
     else:
         newlist +=[2]
-
+# print(newlist)
 y= np.array(newlist) #넘파이 변환 
+print(y)
 print(y.shape) #(4898,)
-print(np.unique(y)) #[0 1 2]
+# print(np.unique(y)) #[0 1 2]
 
 
 
