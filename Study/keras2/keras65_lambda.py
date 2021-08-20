@@ -6,5 +6,5 @@ def gradient2(x):
     return tempy
 
 x = 3
-print(gradient(3))#2
-print(gradient2(3))#2
+print(gradient(x))#2
+print(gradient2(x))#2

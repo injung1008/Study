@@ -130,23 +130,23 @@ estimators = []
 # estimators.append(('standardize', StandardScaler()))
 estimators.append(('mlp', KerasRegressor(build_fn=create_deep_learning_model, epochs=10)))
 pipeline = Pipeline(estimators)
-kfold = KFold(n_splits=5)
+kfold = KFold(n_splits=4)
 results = cross_val_score(pipeline, X, Y, cv=kfold)
 print("%.2f (%.2f) MAE" % (results.mean(), results.std()))
 
 
-# model = create_deep_learning_model()
+model = create_deep_learning_model()
 es = EarlyStopping(monitor='loss', patience=10, mode='min', verbose=1, restore_best_weights=True)
 
-# model.fit(X, Y, epochs = 10000, callbacks=[es])
+model.fit(X, Y, epochs = 10000, callbacks=[es])
 
-#2. 모델                                                        
-model = XGBRegressor(n_estimators=10, learning_rate=0.05, n_jobs=1) 
+# #2. 모델                                                        
+# model = XGBRegressor(n_estimators=10, learning_rate=0.05, n_jobs=1) 
 
 
-#3. 훈련 
-model.fit(X, Y, verbose=1, 
-            eval_metric=["mae"]) 
+# #3. 훈련 
+# model.fit(X, Y, verbose=1, 
+#             eval_metric=["mae"]) 
 
 
 test_y = model.predict(np_test_fps_array)
