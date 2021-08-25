@@ -24,7 +24,6 @@ from tensorflow.python.keras.layers.core import Dropout
 from tensorflow.keras.datasets import cifar10
 (x_train, y_train),(x_test, y_test) = cifar10.load_data()
 
-
 x_train = x_train.reshape(50000, 32*32*3)
 x_test = x_test.reshape(10000, 32*32*3)
 
@@ -36,34 +35,29 @@ x_test = scaler.transform(x_test)
 x_train = x_train.reshape(50000, 32, 32, 3)
 x_test = x_test.reshape(10000, 32, 32, 3)
 
-# print(x_train.shape,x_test.shape)#(50000, 32, 32, 3) (10000, 32, 32, 3)
-# print(y_train.shape,y_test.shape)#(50000, 1) (10000, 1)
-
 from sklearn.preprocessing import OneHotEncoder
 one = OneHotEncoder()
-# y_train = y_train.reshape(-1,1)
-# y_test = y_test.reshape(-1,1)
-
-
+y_train = y_train.reshape(-1,1)
+y_test = y_test.reshape(-1,1)
 one.fit(y_train)
 y_train = one.transform(y_train).toarray() # (50000, 10)
 y_test = one.transform(y_test).toarray() # (10000, 10)
 
 # 2. model
-m = NASNetMobile(weights='imagenet', include_top=False, 
-                input_shape=(32*7,32*7,3))
+m = Xception(weights='imagenet', include_top=False, 
+                input_shape=(96,96,3))
 m.trainable = True # Freeze weight or train
 # m.trainable = False # Freeze weight or train
 
 model = Sequential()
 
-model.add(UpSampling2D(size=(7,7)))
+model.add(UpSampling2D(size=(3,3)))
 model.add(m)
-# model.add(Flatten())
-model.add(GlobalAveragePooling2D())
+model.add(Flatten())
+# model.add(GlobalAveragePooling2D())
+model.add(Dense(1024, activation='relu'))
+model.add(Dropout(0.2))
 model.add(Dense(256, activation='relu'))
-model.add(Dropout(0.5))
-model.add(Dense(128, activation='relu'))
 model.add(Dense(10, activation='softmax')) # cifar10
 # model.add(Dense(100, activation='softmax')) # cifar100
 
@@ -83,13 +77,13 @@ lr = ReduceLROnPlateau(monitor='val_loss', patience=5,
 
 import time 
 start_time = time.time()
-hist = model.fit(x_train, y_train, epochs=10, batch_size=64, verbose=2,
-    validation_split=0.05, callbacks=[es, lr])
+hist = model.fit(x_train, y_train, epochs=6, batch_size=128, verbose=2,
+    validation_split=0.05)
 end_time = time.time() - start_time
 
 # 4. predict eval 
 
-loss = model.evaluate(x_test, y_test, batch_size=64)
+loss = model.evaluate(x_test, y_test, batch_size=128)
 print("======================================")
 
 acc = hist.history['acc']
@@ -98,7 +92,7 @@ loss = hist.history['loss']
 val_loss = hist.history['val_loss']
 
 print("total time : ", np.round(end_time/60, 0), 'min')
-print('acc : ',np.round(acc[-2], 5))
-print('val_acc : ',np.round(val_acc[-2], 5))
-print('loss : ',np.round(loss[-2], 5))
-print('val_loss : ',np.round(val_loss[-2], 5))
+print('acc : ',np.round(acc[-1], 5))
+print('val_acc : ',np.round(val_acc[-1], 5))
+print('loss : ',np.round(loss[-1], 5))
+print('val_loss : ',np.round(val_loss[-1], 5))
