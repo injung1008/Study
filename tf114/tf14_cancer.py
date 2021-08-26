@@ -21,6 +21,10 @@ y = tf.compat.v1.placeholder(tf.float32, shape=[None, 1])
 
 w = tf.Variable(tf.zeros([30,1]),name='weight')
 b = tf.Variable(tf.zeros([1]), name='bias')
+#바이어스 없어도 상관없으니 0으로 잡아도 상관 없음 
+#초기값으로 웨이트랑 바이어스가 크면 값이 잘나오지 않기 때문에 이것저것 해본 뒤에 최적값을 찾는것이 최선이다 
+# w = tf.Variable(tf.random.normal([30,1])) #값이 엄청 낮고 nan값 출력 
+# b = tf.Variable(tf.random.normal([1])) #0.64 수준 값은 출력된다 
 
 
 # w = tf.Variable(tf.random.normal([30,1]))
@@ -32,6 +36,7 @@ hypothesis = tf.sigmoid(tf.matmul(x, w) + b) # 값을 0-1 사이의 값을 내�
 cost = -tf.reduce_mean(y*tf.log(hypothesis)+(1-y)*tf.log(1-hypothesis))#바이너리 크로스 엔트로피 
 #결과값이 마이너스로 나오기 때문에 - 붙여 줘야한다 
 
+# optimizer = tf.train.GradientDescentOptimizer(learning_rate=0.9)
 optimizer = tf.train.AdamOptimizer(learning_rate=0.0000011)
 train = optimizer.minimize(cost)
 
@@ -62,6 +67,7 @@ from sklearn.metrics import r2_score, accuracy_score
 # accs = accuracy_score(y_test, predicted)
 # print(accs)
 
+# Accuracy : 0.90643275
 sess.close()
 
 

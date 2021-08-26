@@ -9,7 +9,7 @@ datasets = load_boston()
 x_data = datasets.data
 y_data = datasets.target
 y_data = y_data.reshape(506,1)
-# print(x.shape, y.shape) #(506, 13) (506,) 
+# print(x_data.shape, y_data.shape) #(506, 13) (506,1) 
 x_train, x_test, y_train, y_test = train_test_split(x_data,y_data,
         train_size = 0.7, shuffle = True, random_state=9)
 

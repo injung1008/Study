@@ -9,7 +9,7 @@ W = tf.placeholder(tf.float32)
 hypothesis = x * W   
 
 # loss의 다른 말 cost 
-cost = tf.reduce_mean(tf.square(y - hypothesis))
+cost = tf.reduce_mean(tf.square(y - hypothesis)) #mse
 
 w_history = [] 
 cost_history = [] 
