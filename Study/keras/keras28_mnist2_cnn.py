@@ -42,7 +42,7 @@ print(x_train[0])
 # model.add(Conv2D(10, kernel_size=(2,2), padding='same', input_shape=(28,28,1)))
 # model.add(Flatten())                                              #(N,180)
 # model.add(Dense(512, activation='relu'))
-# model.add(Dense(10, activation='softmax')) # 왜 시그모이드를 사용할까? 
+# model.add(Dense(10, activation='softmax'))
 # #model.summary()
 
 

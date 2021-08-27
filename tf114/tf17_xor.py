@@ -24,7 +24,7 @@ train = optimizer.minimize(cost)
 
 
 sess = tf.compat.v1.Session() 
-sess.run(tf.global_variables_initializer())
+sess.run(tf.global_variables_ainitializer())
 
 # predict = 
 
