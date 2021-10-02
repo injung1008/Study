@@ -5,7 +5,7 @@ import tensorflow as tf
 from tensorflow.keras.datasets import mnist
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Input, Dense, Conv2D, MaxPooling2D, Flatten, GlobalAveragePooling2D
-from tensorflow.python.distribute.distribute_lib import Strategy
+
 
 (x_train, y_train),(x_test, y_test) = mnist.load_data()
 
@@ -47,6 +47,7 @@ print(y_test.shape)
 
 # )
 
+from tensorflow.python.distribute.distribute_lib import Strategy
 #두개다 사용가능 
 # strategy = tf.distribute.experimental.CentralStorageStrategy()
 # strategy = tf.distribute.experimental.MultiWorkerMirroredStrategy()
